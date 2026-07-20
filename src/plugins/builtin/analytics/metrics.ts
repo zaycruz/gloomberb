@@ -11,6 +11,17 @@ export interface WeightedReturnSeries {
   returns: DatedReturn[];
 }
 
+export interface PerformanceMetricSet {
+  annualizedReturn: number;
+  volatility: number;
+  sharpeRatio: number | null;
+  sortinoRatio: number | null;
+  beta: number | null;
+  alpha: number | null;
+  maxDrawdown: number;
+  observations: number;
+}
+
 function getPricePointTimestamp(point: PricePoint): number {
   const value = point.date as Date | string | number | null | undefined;
   if (value instanceof Date) return value.getTime();
@@ -126,6 +137,67 @@ function alignReturnSeries(
 export function computeDatedBeta(assetReturns: DatedReturn[], marketReturns: DatedReturn[]): number | null {
   const aligned = alignReturnSeries(assetReturns, marketReturns);
   return computeBeta(aligned.asset, aligned.market);
+}
+
+export function computeMaxDrawdown(equityCurve: number[]): number {
+  let peak = equityCurve[0] ?? 0;
+  let maximum = 0;
+  for (const value of equityCurve) {
+    if (!Number.isFinite(value) || value <= 0) continue;
+    peak = Math.max(peak, value);
+    if (peak > 0) maximum = Math.max(maximum, (peak - value) / peak);
+  }
+  return maximum;
+}
+
+/** Preserves IJT PERF v1 semantics over date-aligned portfolio and SPY returns. */
+export function computePerformanceMetrics(
+  portfolioReturns: DatedReturn[],
+  benchmarkReturns: DatedReturn[],
+  riskFreeRate = 0.05,
+): PerformanceMetricSet | null {
+  const benchmarkByDate = new Map(benchmarkReturns.map((point) => [point.dateKey, point.value]));
+  const aligned = portfolioReturns.flatMap((point) => {
+    const benchmark = benchmarkByDate.get(point.dateKey);
+    return benchmark === undefined ? [] : [{ portfolio: point.value, benchmark }];
+  });
+  if (aligned.length < 10) return null;
+
+  const portfolio = aligned.map((point) => point.portfolio);
+  const benchmark = aligned.map((point) => point.benchmark);
+  const average = portfolio.reduce((sum, value) => sum + value, 0) / portfolio.length;
+  const benchmarkAverage = benchmark.reduce((sum, value) => sum + value, 0) / benchmark.length;
+  const variance = portfolio.reduce((sum, value) => sum + (value - average) ** 2, 0)
+    / (portfolio.length - 1);
+  const annualizedReturn = average * 252;
+  const volatility = Math.sqrt(variance) * Math.sqrt(252);
+  const dailyRiskFreeRate = riskFreeRate / 252;
+  const downsideDeviation = Math.sqrt(
+    portfolio.reduce(
+      (sum, value) => sum + Math.min(0, value - dailyRiskFreeRate) ** 2,
+      0,
+    ) / portfolio.length,
+  ) * Math.sqrt(252);
+  const beta = computeBeta(portfolio, benchmark);
+  const equityCurve = portfolio.reduce<number[]>(
+    (curve, value) => [...curve, curve[curve.length - 1]! * (1 + value)],
+    [1],
+  );
+
+  return {
+    annualizedReturn,
+    volatility,
+    sharpeRatio: computeSharpeRatio(portfolio, riskFreeRate),
+    sortinoRatio: downsideDeviation < Number.EPSILON
+      ? null
+      : (annualizedReturn - riskFreeRate) / downsideDeviation,
+    beta,
+    alpha: beta === null
+      ? null
+      : annualizedReturn - beta * (benchmarkAverage * 252 - riskFreeRate),
+    maxDrawdown: computeMaxDrawdown(equityCurve),
+    observations: aligned.length,
+  };
 }
 
 export interface SectorAllocation {

@@ -31,9 +31,9 @@
     { "code": "PORT", "target": "ijt-data/portfolio-snapshot", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "OPTA", "target": "ijt-risk-quant/options", "status": "port-required" },
     { "code": "RISK", "target": "ijt-risk-quant/risk", "status": "port-required" },
-    { "code": "PERF", "target": "analytics/ijt-risk-quant", "status": "port-required" },
+    { "code": "PERF", "target": "analytics/ijt-risk-quant", "status": "ported-open-tui-no-position-verified" },
     { "code": "BACK", "target": "ijt-risk-quant/backtest", "status": "port-required" },
-    { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "kernel-ported" },
+    { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "RPT", "target": "ijt-fund-ops/report", "status": "port-required" },
     { "code": "NAV", "target": "ijt-fund-ops/nav", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "read-pane-open-tui-unauthed-verified" }

@@ -42,7 +42,7 @@ mock or placeholder.
 | PORT | Live Supabase positions | `ijt-data` canonical snapshot pane | Verify production credentials; add direct-broker mode |
 | OPTA | Hard-coded candidates/Greeks | Owned options analysis | Deterministic scoring over real chain |
 | RISK | Live deterministic analytics | `ijt-risk-quant` | Port kernels and fixtures |
-| PERF | Live deterministic analytics | Existing analytics plus IJT kernels | Consolidate to one canonical implementation |
+| PERF | Live deterministic analytics | Existing analytics plus IJT PERF view | Verify production portfolio history and desktop rendering |
 | BACK | Hard-coded trades | Owned backtesting service | Rebuild with costs, slippage and no look-ahead |
 | SIM | Seeded live Monte Carlo | `ijt-risk-quant` | Port simulation and equivalence tests |
 | RPT | Live deterministic report | `ijt-fund-ops` report | Add immutable snapshot/export |
@@ -60,9 +60,18 @@ Current implementation checkpoints:
   a production-shaped operator projection, and live OpenTUI proves the
   unauthenticated path fails closed. The pane visibly keeps all writes disabled;
   governed command receipts and the six missing workflows remain open.
-- SIM: the seeded GBM kernel and percentile/ruin outputs are ported with
-  parity tests and a five-million path-day ceiling; portfolio-data wiring and
-  the user-facing simulation pane remain open.
+- SIM: the exact shortcut now composes canonical authenticated positions,
+  current native 1Y daily histories and the bounded backend GBM capability.
+  The adapter requires one currency, complete non-stale histories and at least
+  ten common returns; model and pane tests cover inputs, percentiles and full
+  provenance, while live OpenTUI proves the unauthenticated path fails closed.
+  Authenticated production-history and desktop-renderer verification remain
+  open.
+- PERF: the exact shortcut now reuses the native portfolio-history pipeline and
+  adds IJT v1 date-aligned Sharpe, Sortino, annualized return/volatility/alpha,
+  beta and max-drawdown semantics. Unit and pane tests cover the full metric set,
+  while live OpenTUI verifies the honest no-position state. Production-history
+  and desktop-renderer verification remain open.
 - COT/NAV: exact command-bar shortcuts now open authenticated canonical-data
   panes. Component tests cover production-shaped responses and provenance, and
   live OpenTUI checks prove the unauthenticated path fails closed with `IJT

@@ -3,6 +3,7 @@ import {
   computeBeta,
   computeDatedBeta,
   computeDatedReturns,
+  computePerformanceMetrics,
   computeSectorAllocation,
   computeSharpeRatio,
   computeWeightedPortfolioReturns,
@@ -89,6 +90,35 @@ describe("computeBeta", () => {
       { dateKey: "2024-01-02", value: 0.1 },
       { dateKey: "2024-01-03", value: -0.1 },
     ]);
+  });
+});
+
+describe("computePerformanceMetrics", () => {
+  test("ports IJT PERF metrics over date-aligned portfolio and benchmark returns", () => {
+    const benchmark = datedReturns([
+      -0.01, 0.012, 0.004, -0.006, 0.011, 0.008,
+      -0.012, 0.009, 0.013, -0.007, 0.005, 0.01,
+    ], 2);
+    const portfolio = [
+      { dateKey: "2024-01-01", value: 0.5 },
+      ...benchmark.map((point) => ({ dateKey: point.dateKey, value: point.value * 1.5 + 0.001 })),
+    ];
+
+    const metrics = computePerformanceMetrics(portfolio, benchmark, 0.05);
+
+    expect(metrics).not.toBeNull();
+    expect(metrics?.observations).toBe(12);
+    expect(metrics?.beta).toBeCloseTo(1.5, 5);
+    expect(metrics?.annualizedReturn).toBeGreaterThan(0);
+    expect(metrics?.volatility).toBeGreaterThan(0);
+    expect(metrics?.maxDrawdown).toBeGreaterThan(0);
+    expect(metrics?.sharpeRatio).not.toBeNull();
+    expect(metrics?.sortinoRatio).not.toBeNull();
+    expect(metrics?.alpha).not.toBeNull();
+  });
+
+  test("requires ten aligned observations", () => {
+    expect(computePerformanceMetrics(datedReturns([0.01]), datedReturns([0.01]))).toBeNull();
   });
 });
 

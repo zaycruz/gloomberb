@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { act, useReducer, type ReactElement } from "react";
+import { Box } from "../../../ui";
 import { testRender } from "../../../renderers/opentui/test-utils";
 import {
   AppContext,
@@ -14,7 +15,7 @@ import type { TickerFinancials } from "../../../types/financials";
 import type { TickerRecord } from "../../../types/ticker";
 import type { BrokerAccount } from "../../../types/trading";
 import { PluginRenderProvider, type PluginRuntimeAccess } from "../../runtime";
-import { analyticsPlugin } from "./index";
+import { analyticsPlugin, PerformancePaneView } from "./index";
 
 const TEST_PANE_ID = "analytics:test";
 const BROKER_PORTFOLIO_ID = "broker:ibkr-flex:DU12345";
@@ -221,6 +222,79 @@ afterEach(async () => {
 });
 
 describe("PortfolioAnalyticsPane", () => {
+  test("registers PERF as the exact IJT performance shortcut", () => {
+    const template = analyticsPlugin.paneTemplates?.find(({ id }) => id === "performance-analytics-pane");
+    expect(template?.shortcut?.prefix).toBe("PERF");
+    expect(analyticsPlugin.paneTemplates?.find(({ id }) => id === "analytics-pane")?.shortcut?.prefix)
+      .toBe("PANL");
+  });
+
+  test("renders every IJT PERF metric with its assumptions and provenance", async () => {
+    await act(async () => {
+      testSetup = await testRender(
+        <Box flexDirection="column" width={100} height={24}>
+          <PerformancePaneView
+            hasPositions
+            asOf="2026-07-17"
+            metrics={{
+              annualizedReturn: 0.18,
+              volatility: 0.12,
+              sharpeRatio: 1.08,
+              sortinoRatio: 1.42,
+              beta: 0.85,
+              alpha: 0.04,
+              maxDrawdown: 0.075,
+              observations: 245,
+            }}
+          />
+        </Box>,
+        { width: 100, height: 24 },
+      );
+    });
+    for (let index = 0; index < 3; index += 1) {
+      await act(async () => {
+        await Promise.resolve();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await testSetup!.renderOnce();
+      });
+    }
+
+    const frame = testSetup!.captureCharFrame();
+    expect(frame).toContain("IJT PERFORMANCE ANALYTICS");
+    expect(frame).toContain("SHARPE RATIO");
+    expect(frame).toContain("SORTINO RATIO");
+    expect(frame).toContain("ANNUALIZED RETURN");
+    expect(frame).toContain("18.00%");
+    expect(frame).toContain("MAX DRAWDOWN");
+    expect(frame).toContain("-7.50%");
+    expect(frame).toContain("SPY BENCHMARK · 5.00% RF · 245 ALIGNED RETURNS");
+    expect(frame).toContain("HISTORY THROUGH 2026-07-17");
+  });
+
+  test("fails closed when PERF lacks aligned portfolio and SPY history", async () => {
+    const baseConfig = createAnalyticsConfig(BROKER_PORTFOLIO_ID);
+    const config = {
+      ...baseConfig,
+      layout: {
+        ...baseConfig.layout,
+        instances: baseConfig.layout.instances.map((instance) => ({
+          ...instance,
+          params: { ...instance.params, view: "performance" },
+        })),
+      },
+    };
+    await act(async () => {
+      testSetup = await testRender(<AnalyticsHarness config={config} />, { width: 100, height: 24 });
+      await Promise.resolve();
+      await testSetup.renderOnce();
+    });
+    await flushFrame();
+
+    const frame = testSetup!.captureCharFrame();
+    expect(frame).toContain("INSUFFICIENT ALIGNED HISTORY");
+    expect(frame).toContain("PERF requires at least 10 shared daily portfolio and SPY returns.");
+  });
+
   test("renders portfolio tabs and filters broker-managed positions to the active portfolio", async () => {
     await act(async () => {
       testSetup = await testRender(

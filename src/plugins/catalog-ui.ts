@@ -17,6 +17,7 @@ import { ijtTriadPlugin } from "./builtin/ijt-triad";
 import { ijtPlatformPlugin } from "./builtin/ijt-platform";
 import { ijtDataPanesPlugin } from "./builtin/ijt-data-panes";
 import { ijtFundPlugin } from "./builtin/ijt-fund";
+import { ijtRiskPlugin } from "./builtin/ijt-risk";
 import {
   brokerPlugin,
   macroPlugin,
@@ -28,6 +29,7 @@ export const uiBuiltinPlugins: GloomPlugin[] = [
   ijtPlatformPlugin,
   ijtDataPanesPlugin,
   ijtFundPlugin,
+  ijtRiskPlugin,
   gloomberbCloudPlugin,
   portfolioListPlugin,
   tickerResearchPlugin,

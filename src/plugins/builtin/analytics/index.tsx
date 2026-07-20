@@ -20,8 +20,10 @@ import {
 } from "./broker-performance";
 import {
   computeDatedBeta,
+  computePerformanceMetrics,
   computeSharpeRatio,
   hasPortfolioPosition,
+  type PerformanceMetricSet,
 } from "./metrics";
 import {
   buildAnalyticsRiskRows,
@@ -49,6 +51,60 @@ import {
   PortfolioHistorySection,
   SectorAllocationTable,
 } from "./view";
+
+function performancePercent(value: number | null): string {
+  return value === null ? "—" : `${(value * 100).toFixed(2)}%`;
+}
+
+function performanceRatio(value: number | null): string {
+  return value === null ? "—" : value.toFixed(2);
+}
+
+export function PerformancePaneView({
+  metrics,
+  hasPositions,
+  asOf,
+}: {
+  metrics: PerformanceMetricSet | null;
+  hasPositions: boolean;
+  asOf: string | null;
+}) {
+  const rows = metrics ? [
+    ["SHARPE RATIO", performanceRatio(metrics.sharpeRatio)],
+    ["SORTINO RATIO", performanceRatio(metrics.sortinoRatio)],
+    ["ANNUALIZED RETURN", performancePercent(metrics.annualizedReturn)],
+    ["ANNUALIZED VOLATILITY", performancePercent(metrics.volatility)],
+    ["MAX DRAWDOWN", metrics.maxDrawdown < Number.EPSILON ? "0.00%" : `-${performancePercent(metrics.maxDrawdown)}`],
+    ["BETA VS SPY", performanceRatio(metrics.beta)],
+    ["ANNUALIZED ALPHA", performancePercent(metrics.alpha)],
+  ] as const : [];
+  return (
+    <Box flexDirection="column" padding={1} gap={1}>
+      <Text fg={colors.accent} attributes={TextAttributes.BOLD}>IJT PERFORMANCE ANALYTICS</Text>
+      {!hasPositions ? (
+        <Text fg={colors.textMuted}>NO POSITIONS</Text>
+      ) : !metrics ? (
+        <>
+          <Text fg={colors.warning} attributes={TextAttributes.BOLD}>INSUFFICIENT ALIGNED HISTORY</Text>
+          <Text fg={colors.textDim}>PERF requires at least 10 shared daily portfolio and SPY returns.</Text>
+        </>
+      ) : (
+        <>
+          {rows.map(([label, value]) => (
+            <Box key={label} flexDirection="row">
+              <Box width={24}><Text fg={colors.textDim}>{label}</Text></Box>
+              <Text fg={colors.textBright} attributes={TextAttributes.BOLD}>{value}</Text>
+            </Box>
+          ))}
+          <Text fg={colors.textMuted}>
+            1Y DAILY · SPY BENCHMARK · 5.00% RF · {metrics.observations} ALIGNED RETURNS
+          </Text>
+          <Text fg={colors.textMuted}>HISTORY THROUGH {asOf ?? "unavailable"}</Text>
+        </>
+      )}
+    </Box>
+  );
+}
 
 function PortfolioAnalyticsPane({ focused, width, height }: PaneProps) {
   const focusedCollectionId = useAppSelector((state) => getFocusedCollectionId(state));
@@ -186,6 +242,12 @@ function PortfolioAnalyticsPane({ focused, width, height }: PaneProps) {
     () => (portfolioReturnSeries && spyReturnSeries ? computeDatedBeta(portfolioReturnSeries, spyReturnSeries) : null),
     [portfolioReturnSeries, spyReturnSeries],
   );
+  const performanceMetrics = useMemo(
+    () => (portfolioReturnSeries && spyReturnSeries
+      ? computePerformanceMetrics(portfolioReturnSeries, spyReturnSeries)
+      : null),
+    [portfolioReturnSeries, spyReturnSeries],
+  );
 
   const sectorRows = useMemo<SectorTableRow[]>(
     () => buildSectorRowsFromPortfolioColumns(portfolioTickers, financials, columnContext),
@@ -243,6 +305,16 @@ function PortfolioAnalyticsPane({ focused, width, height }: PaneProps) {
       setCurrentPortfolioId(activePortfolioId);
     }
   }, [activePortfolioId, currentPortfolioId, setCurrentPortfolioId]);
+
+  if (paneInstance?.params?.view === "performance") {
+    return (
+      <PerformancePaneView
+        metrics={performanceMetrics}
+        hasPositions={hasPositions}
+        asOf={portfolioReturnSeries?.at(-1)?.dateKey ?? null}
+      />
+    );
+  }
 
   return (
     <Box flexDirection="column" width={width} height={height}>
@@ -347,6 +419,19 @@ export const analyticsPlugin: GloomPlugin = {
       createInstance: (context) => {
         const portfolioId = resolveTemplatePortfolioId(context.config.portfolios, context.activeCollectionId);
         return portfolioId ? { params: { portfolioId } } : null;
+      },
+    },
+    {
+      id: "performance-analytics-pane",
+      paneId: "analytics",
+      label: "IJT Performance Analytics",
+      description: "Date-aligned return, volatility, drawdown, alpha, beta, Sharpe, and Sortino metrics.",
+      keywords: ["performance", "perf", "returns", "drawdown", "sharpe", "sortino", "alpha", "beta"],
+      shortcut: { prefix: "PERF" },
+      canCreate: (context) => context.config.portfolios.length > 0,
+      createInstance: (context) => {
+        const portfolioId = resolveTemplatePortfolioId(context.config.portfolios, context.activeCollectionId);
+        return portfolioId ? { params: { portfolioId, view: "performance" } } : null;
       },
     },
   ],
