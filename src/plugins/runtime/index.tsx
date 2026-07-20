@@ -103,6 +103,16 @@ export function useAssetData(): ReturnType<PluginRuntimeAccess["getMarketData"]>
   return useMarketData();
 }
 
+export function useCapabilityInvoker() {
+  const { runtime } = usePluginRenderContext();
+  return useCallback(<T,>(capabilityId: string, operationId: string, payload: unknown) => {
+    if (!runtime.invokeCapability) {
+      return Promise.reject(new Error("Capability invocation is unavailable in this renderer."));
+    }
+    return runtime.invokeCapability<T>(capabilityId, operationId, payload);
+  }, [runtime]);
+}
+
 export function usePluginBrokerActions() {
   const { runtime } = usePluginRenderContext();
   return {

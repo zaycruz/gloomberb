@@ -109,8 +109,20 @@ export class PluginRegistry implements PluginRuntimeAccess {
   focusPaneFn: ((paneId: string) => void) = () => {};
   pinTickerFn: ((symbol: string, options?: PinTickerOptions) => void) = () => {};
   navigateTickerFn: ((symbol: string, options?: { sourcePaneId?: string | null }) => void) = () => {};
+  invokeCapabilityFn: <T = unknown>(
+    capabilityId: string,
+    operationId: string,
+    payload: unknown,
+  ) => Promise<T> = (capabilityId, operationId, payload) => (
+    this.capabilities.invoke<T>(capabilityId, operationId, payload, { renderer: true })
+  );
   getMarketData = () => this.marketData;
   getCapability = (capabilityId: string) => this.capabilities.get(capabilityId)?.capability ?? null;
+  invokeCapability = <T = unknown>(
+    capabilityId: string,
+    operationId: string,
+    payload: unknown,
+  ) => this.invokeCapabilityFn<T>(capabilityId, operationId, payload);
   getBrokerAdapter = (brokerType: string) => this.contributions.brokersMap.get(brokerType) ?? null;
   connectBrokerInstance = (instanceId: string) => this.connectBrokerInstanceFn(instanceId);
   updateBrokerInstance = (instanceId: string, values: Record<string, unknown>, options?: BrokerInstanceUpdateOptions) => (

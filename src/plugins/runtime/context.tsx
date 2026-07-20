@@ -19,6 +19,11 @@ import type {
 export interface PluginRuntimeAccess {
   getMarketData(): DataProvider | null;
   getCapability(capabilityId: string): PluginCapability | null;
+  invokeCapability?<T = unknown>(
+    capabilityId: string,
+    operationId: string,
+    payload: unknown,
+  ): Promise<T>;
   getBrokerAdapter(brokerType: string): BrokerAdapter | null;
   connectBrokerInstance(instanceId: string): Promise<void>;
   updateBrokerInstance(instanceId: string, values: Record<string, unknown>, options?: BrokerInstanceUpdateOptions): Promise<void>;

@@ -12,6 +12,7 @@ import { getRendererBuiltinPlugins } from "../../../plugins/catalog-ui";
 import { createRemoteAssetDataClient } from "./remote/asset-data-client";
 import { RemotePersistence } from "./remote/persistence";
 import { RemoteTickerRepository } from "./remote/ticker-repository";
+import { backendRequest } from "./backend-rpc";
 
 const servicesLog = debugLog.createLogger("services");
 
@@ -31,6 +32,10 @@ export function createAppServices({ config }: { config: AppConfig }): AppService
 
   pluginRegistry.getConfigFn = () => config;
   pluginRegistry.getLayoutFn = () => config.layout;
+  pluginRegistry.invokeCapabilityFn = (capabilityId, operationId, payload) => backendRequest(
+    "capability.invoke",
+    { capabilityId, operationId, payload },
+  );
   pluginRegistry.registerNewsCapabilityFn = () => () => {};
   pluginRegistry.watchNewsQueryFn = (query, listener) => newsService.watchQuery(query, listener);
 

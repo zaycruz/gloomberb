@@ -201,6 +201,53 @@ describe("PluginRegistry context menu providers", () => {
 describe("PluginRegistry capabilities", () => {
   const source = (id: string) => assetDataProvider({ ...dataProvider, id, name: id });
 
+  test("invokes only renderer-safe capability operations through the plugin runtime", async () => {
+    const registry = createRegistry();
+    await registry.register({
+      id: "service-plugin",
+      name: "Service Plugin",
+      version: "1.0.0",
+      capabilities: [{
+        id: "plugin-service.example",
+        kind: "plugin-service",
+        name: "Example",
+        operations: {
+          read: {
+            kind: "read",
+            rendererSafe: true,
+            handler: (input) => ({ input }),
+          },
+          privateRead: {
+            kind: "read",
+            handler: () => ({ secret: true }),
+          },
+        },
+      }],
+    });
+
+    await expect(registry.invokeCapability("plugin-service.example", "read", { id: "one" }))
+      .resolves.toEqual({ input: { id: "one" } });
+    await expect(registry.invokeCapability("plugin-service.example", "privateRead", {}))
+      .rejects.toThrow("not available to renderers");
+  });
+
+  test("allows renderer registries to route invocation to the backend bridge", async () => {
+    const registry = createRegistry({ enableCapabilityHandlers: false });
+    const requests: unknown[] = [];
+    registry.invokeCapabilityFn = async (capabilityId, operationId, payload) => {
+      requests.push({ capabilityId, operationId, payload });
+      return { ok: true } as never;
+    };
+
+    await expect(registry.invokeCapability("plugin-service.example", "read", { id: "one" }))
+      .resolves.toEqual({ ok: true });
+    expect(requests).toEqual([{
+      capabilityId: "plugin-service.example",
+      operationId: "read",
+      payload: { id: "one" },
+    }]);
+  });
+
   test("disabled plugins disable their contributed capabilities", async () => {
     const registry = createRegistry({ disabledPlugins: ["source-plugin"] });
     await registry.register({
