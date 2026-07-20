@@ -3,7 +3,6 @@ import type { LoadedExternalPlugin } from "./loader";
 import { debugPlugin } from "./builtin/debug";
 import { yahooPlugin } from "./builtin/yahoo";
 import { uiBuiltinPlugins } from "./catalog-ui";
-import { ijtPlatformPlugin } from "./builtin/ijt-platform";
 
 export interface PluginCatalogEntry {
   plugin: GloomPlugin;
@@ -13,7 +12,6 @@ export interface PluginCatalogEntry {
 }
 
 const builtinPlugins: GloomPlugin[] = [
-  ijtPlatformPlugin,
   yahooPlugin,
   ...uiBuiltinPlugins,
   debugPlugin,

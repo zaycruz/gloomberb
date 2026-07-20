@@ -479,6 +479,11 @@ export interface GloomPluginContext {
   getTicker(ticker: string): TickerRecord | null;
   getConfig(): import("./config").AppConfig;
   getPaneDef(paneId: string): PaneDef | undefined;
+  invokeCapability<T = unknown>(
+    capabilityId: string,
+    operationId: string,
+    payload: unknown,
+  ): Promise<T>;
 
   readonly marketData: DataProvider;
   readonly tickerRepository: TickerRepository;

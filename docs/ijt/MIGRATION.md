@@ -51,6 +51,8 @@ mock or placeholder.
 
 Current implementation checkpoints:
 
+- Auth: masked `IJT Login` and explicit `IJT Logout` command-bar workflows
+  invoke the backend capability in both renderers; sessions remain volatile.
 - TRIAD: deterministic v1 catalog, `TRIAD` pane shortcut, bot-safe text/JSON
   report, backend capability, and live OpenTUI verification are complete.
 - CAP: strict Fund contract/client and authenticated read-only backend

@@ -6,6 +6,7 @@ import type { DataProvider } from "../../types/data-provider";
 import type { GloomPlugin, GloomPluginContext } from "../../types/plugin";
 import { assetDataProvider } from "../../capabilities";
 import { PluginRegistry } from "./index";
+import { ijtPlatformPlugin } from "../builtin/ijt-platform";
 
 const dataProvider: DataProvider = {
   id: "test-provider",
@@ -289,6 +290,32 @@ describe("PluginRegistry capabilities", () => {
     expect(registry.getCapability("asset-data.source-a")).toBeNull();
     expect(registry.getCapability("asset-data.source-b")).toBeNull();
     expect(registry.getEnabledCapabilities("asset-data")).toEqual([]);
+  });
+});
+
+describe("IJT platform commands", () => {
+  test("routes masked login and logout workflows through backend capabilities", async () => {
+    const registry = createRegistry({ enableCapabilityHandlers: false });
+    const requests: Array<{ capabilityId: string; operationId: string; payload: unknown }> = [];
+    const notifications: string[] = [];
+    registry.invokeCapabilityFn = async (capabilityId, operationId, payload) => {
+      requests.push({ capabilityId, operationId, payload });
+      return { status: "authenticated" } as never;
+    };
+    registry.notifyFn = ({ body }) => notifications.push(body);
+    await registry.register(ijtPlatformPlugin);
+
+    const login = registry.commands.get("ijt-auth-login")!;
+    expect(login.wizard?.find(({ key }) => key === "password")?.type).toBe("password");
+    await login.execute({ email: "operator@example.com", password: "secret" });
+    await registry.commands.get("ijt-auth-logout")!.execute();
+
+    expect(requests.map(({ capabilityId, operationId }) => `${capabilityId}.${operationId}`))
+      .toEqual([
+        "plugin-service.ijt-auth.signIn",
+        "plugin-service.ijt-auth.signOut",
+      ]);
+    expect(notifications).toHaveLength(2);
   });
 });
 

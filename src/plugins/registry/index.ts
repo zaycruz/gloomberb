@@ -420,6 +420,9 @@ export class PluginRegistry implements PluginRuntimeAccess {
       getData: (ticker) => this.getDataFn(ticker),
       getTicker: (symbol) => this.getTickerFn(symbol),
       getConfig: () => this.getConfigFn(),
+      invokeCapability: (capabilityId, operationId, payload) => (
+        this.invokeCapability(capabilityId, operationId, payload)
+      ),
       getResumeState: (key, schemaVersion) => this.getResumeState(pluginId, key, schemaVersion),
       setResumeState: (key, value, schemaVersion) => this.setResumeState(pluginId, key, value, schemaVersion),
       deleteResumeState: (key) => this.deleteResumeState(pluginId, key),
