@@ -16,6 +16,7 @@ import { kellySizerPlugin } from "./builtin/kelly-sizer";
 import { ijtTriadPlugin } from "./builtin/ijt-triad";
 import { ijtPlatformPlugin } from "./builtin/ijt-platform";
 import { ijtDataPanesPlugin } from "./builtin/ijt-data-panes";
+import { ijtFundPlugin } from "./builtin/ijt-fund";
 import {
   brokerPlugin,
   macroPlugin,
@@ -26,6 +27,7 @@ import {
 export const uiBuiltinPlugins: GloomPlugin[] = [
   ijtPlatformPlugin,
   ijtDataPanesPlugin,
+  ijtFundPlugin,
   gloomberbCloudPlugin,
   portfolioListPlugin,
   tickerResearchPlugin,

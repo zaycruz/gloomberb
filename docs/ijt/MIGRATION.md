@@ -47,7 +47,7 @@ mock or placeholder.
 | SIM | Seeded live Monte Carlo | `ijt-risk-quant` | Port simulation and equivalence tests |
 | RPT | Live deterministic report | `ijt-fund-ops` report | Add immutable snapshot/export |
 | NAV | Live canonical NAV plus broker NLV | `ijt-fund-ops` NAV pane | Verify production credentials; add broker-NLV reconciliation |
-| CAP | Authenticated Fund API and five writes | `ijt-fund-ops` operator pane | Port receipts/idempotency; complete all workflows |
+| CAP | Authenticated Fund API and five writes | `ijt-fund-ops` operator pane | Expose writes only after receipts/idempotency and all workflows are complete |
 
 Current implementation checkpoints:
 
@@ -55,8 +55,11 @@ Current implementation checkpoints:
   invoke the backend capability in both renderers; sessions remain volatile.
 - TRIAD: deterministic v1 catalog, `TRIAD` pane shortcut, bot-safe text/JSON
   report, backend capability, and live OpenTUI verification are complete.
-- CAP: strict Fund contract/client and authenticated read-only backend
-  capability are complete; operator pane and governed writes remain open.
+- CAP: the exact shortcut opens the authenticated Fund workspace with freshness,
+  reconciliation, LP, selected-account and transaction projections. Tests cover
+  a production-shaped operator projection, and live OpenTUI proves the
+  unauthenticated path fails closed. The pane visibly keeps all writes disabled;
+  governed command receipts and the six missing workflows remain open.
 - SIM: the seeded GBM kernel and percentile/ruin outputs are ported with
   parity tests and a five-million path-day ceiling; portfolio-data wiring and
   the user-facing simulation pane remain open.

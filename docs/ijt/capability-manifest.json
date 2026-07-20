@@ -36,6 +36,6 @@
     { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "kernel-ported" },
     { "code": "RPT", "target": "ijt-fund-ops/report", "status": "port-required" },
     { "code": "NAV", "target": "ijt-fund-ops/nav", "status": "pane-ported-open-tui-unauthed-verified" },
-    { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "read-contract-ported" }
+    { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "read-pane-open-tui-unauthed-verified" }
   ]
 }
