@@ -33,7 +33,7 @@
     { "code": "RISK", "target": "ijt-risk-quant/risk", "status": "port-required" },
     { "code": "PERF", "target": "analytics/ijt-risk-quant", "status": "port-required" },
     { "code": "BACK", "target": "ijt-risk-quant/backtest", "status": "port-required" },
-    { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "port-required" },
+    { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "kernel-ported" },
     { "code": "RPT", "target": "ijt-fund-ops/report", "status": "port-required" },
     { "code": "NAV", "target": "ijt-fund-ops/nav", "status": "port-required" },
     { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "read-contract-ported" }

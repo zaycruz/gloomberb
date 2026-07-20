@@ -55,6 +55,9 @@ Current implementation checkpoints:
   report, backend capability, and live OpenTUI verification are complete.
 - CAP: strict Fund contract/client and authenticated read-only backend
   capability are complete; operator pane and governed writes remain open.
+- SIM: the seeded GBM kernel and percentile/ruin outputs are ported with
+  parity tests and a five-million path-day ceiling; portfolio-data wiring and
+  the user-facing simulation pane remain open.
 
 ## Cross-cutting migration work
 
