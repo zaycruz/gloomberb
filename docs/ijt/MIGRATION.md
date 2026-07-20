@@ -58,6 +58,9 @@ Current implementation checkpoints:
 - SIM: the seeded GBM kernel and percentile/ruin outputs are ported with
   parity tests and a five-million path-day ceiling; portfolio-data wiring and
   the user-facing simulation pane remain open.
+- COT/PORT/NAV: strict authenticated REST reads are available as backend
+  capabilities for COT, positions, account summary, LP roster and NAV history;
+  their user-facing panes and portfolio adapters remain open.
 
 ## Cross-cutting migration work
 
