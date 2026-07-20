@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { createFundApiClient, FundApiError } from "./client";
 import { FUND_API_CONTRACT } from "./contract";
+import { createIjtFundCapability } from "./capability";
 
 const projection = {
   asOf: "2026-07-16T12:00:00.000Z",
@@ -22,6 +23,19 @@ function jsonResponse(value: unknown, status = 200): Response {
 }
 
 describe("IJT Fund API contract", () => {
+  test("exposes only the read-only workspace operation to renderers", async () => {
+    const capability = createIjtFundCapability({
+      loadWorkspace: async () => FUND_API_CONTRACT.decodeWorkspace(projection),
+    });
+
+    expect(Object.keys(capability.operations)).toEqual(["workspace"]);
+    expect(capability.operations.workspace.rendererSafe).toBe(true);
+    await expect(capability.operations.workspace.handler?.(
+      {},
+      { capability, operationId: "workspace" },
+    )).resolves.toEqual(projection);
+  });
+
   test("strictly decodes a workspace projection", () => {
     const decoded = FUND_API_CONTRACT.decodeWorkspace(projection);
     expect(decoded.capability).toBe("operator");

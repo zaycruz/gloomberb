@@ -27,7 +27,8 @@ services rather than by embedding the former Solid/Tauri application.
 2. Supabase access tokens are obtained at request time. Authorization headers
    are never cached, serialized, logged, synced or placed in model context.
 3. Secrets do not use plugin config or the ordinary SQLite state store. Until a
-   protected native store exists, token persistence fails closed.
+   protected native store exists, sessions are memory-only and explicitly
+   reported as `volatile`; restart requires sign-in again.
 4. Every financial number carries source, `as_of`, freshness and availability.
    Missing data renders unavailable; production mock fallbacks are forbidden.
 5. LLMs may explain and orchestrate but never calculate authoritative financial
@@ -47,6 +48,14 @@ services rather than by embedding the former Solid/Tauri application.
 - Import from `~/.gloomberb` must be explicit and one-way. The applications must
   never share mutable storage.
 - `LICENSE` and upstream history remain intact; see `FORK_NOTICE.md`.
+
+## Runtime configuration
+
+The backend auth capability is enabled only when both
+`IJT_SUPABASE_URL=https://aezweyjehriqeadenfjw.supabase.co` and a valid
+`IJT_SUPABASE_PUBLISHABLE_KEY` are present. The URL is pinned and the
+publishable key is validated before any request. `.env.example` contains
+placeholders only; real local environment files remain ignored by Git.
 
 ## Migration order
 
