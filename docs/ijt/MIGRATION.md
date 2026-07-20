@@ -41,7 +41,7 @@ mock or placeholder.
 | JRNL | Hard-coded trades | Owned journal plugin | Build persistence, imports, stats and export |
 | PORT | Live Supabase positions | `ijt-data` canonical snapshot pane | Verify production credentials; add direct-broker mode |
 | OPTA | Hard-coded candidates/Greeks | Owned options analysis | Deterministic scoring over real chain |
-| RISK | Live deterministic analytics | `ijt-risk-quant` | Port kernels and fixtures |
+| RISK | Live deterministic analytics | `ijt-risk-quant` canonical risk pane | Verify production history and desktop rendering |
 | PERF | Live deterministic analytics | Existing analytics plus IJT PERF view | Verify production portfolio history and desktop rendering |
 | BACK | Hard-coded trades | Owned backtesting service | Rebuild with costs, slippage and no look-ahead |
 | SIM | Seeded live Monte Carlo | `ijt-risk-quant` | Port simulation and equivalence tests |
@@ -72,6 +72,12 @@ Current implementation checkpoints:
   beta and max-drawdown semantics. Unit and pane tests cover the full metric set,
   while live OpenTUI verifies the honest no-position state. Production-history
   and desktop-renderer verification remain open.
+- RISK: the exact shortcut reuses the canonical authenticated position snapshot
+  and native 1Y daily histories, including SPY. The IJT v1 deterministic model
+  now reports gross/net and beta-adjusted exposure, 95% one-day parametric VaR,
+  concentration-policy breaches, top-holding correlations and fixed beta
+  shocks with source timestamps. Model and pane tests cover complete and partial
+  histories; live OpenTUI proves the unauthenticated path fails closed.
 - COT/NAV: exact command-bar shortcuts now open authenticated canonical-data
   panes. Component tests cover production-shaped responses and provenance, and
   live OpenTUI checks prove the unauthenticated path fails closed with `IJT

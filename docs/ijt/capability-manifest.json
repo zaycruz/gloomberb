@@ -30,7 +30,7 @@
     { "code": "JRNL", "target": "ijt-journal", "status": "port-required" },
     { "code": "PORT", "target": "ijt-data/portfolio-snapshot", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "OPTA", "target": "ijt-risk-quant/options", "status": "port-required" },
-    { "code": "RISK", "target": "ijt-risk-quant/risk", "status": "port-required" },
+    { "code": "RISK", "target": "ijt-risk-quant/risk", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "PERF", "target": "analytics/ijt-risk-quant", "status": "ported-open-tui-no-position-verified" },
     { "code": "BACK", "target": "ijt-risk-quant/backtest", "status": "port-required" },
     { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "pane-ported-open-tui-unauthed-verified" },

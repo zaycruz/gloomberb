@@ -14,6 +14,7 @@ import {
   type IjtHistorySeries,
   type SimulationProvenance,
 } from "./model";
+import { calculateIjtRiskSnapshot, type RiskSnapshot } from "./risk-model";
 
 type SnapshotState =
   | { status: "loading" }
@@ -165,6 +166,104 @@ export function IjtSimulationPane(_props: PaneProps) {
   );
 }
 
+function riskMoney(value: number | null, currency: string): string {
+  return value === null ? "—" : formatCurrency(value, currency);
+}
+
+export function RiskResultView({ snapshot, currency }: { snapshot: RiskSnapshot; currency: string }) {
+  return (
+    <Box flexDirection="column" padding={1} gap={1}>
+      <Text fg={colors.accent} attributes={TextAttributes.BOLD}>IJT PORTFOLIO RISK MANAGER</Text>
+      <Text fg={colors.textBright} attributes={TextAttributes.BOLD}>
+        GROSS {riskMoney(snapshot.grossExposure, currency)}   NET {riskMoney(snapshot.netExposure, currency)}
+      </Text>
+      <Text fg={colors.text}>
+        BETA-ADJ {riskMoney(snapshot.betaAdjustedExposure, currency)}   95% 1D VaR {riskMoney(snapshot.valueAtRisk, currency)}
+      </Text>
+      <Text fg={colors.textMuted}>{snapshot.returnObservations} COMMON LEVERED RETURNS · Z 1.645</Text>
+      <Text fg={colors.border}>CONCENTRATION WATCH · POLICY MAX 25%</Text>
+      {snapshot.watchItems.length > 0 ? snapshot.watchItems.map((item) => (
+        <Text key={item.symbol} fg={colors.warning}>
+          {item.symbol.padEnd(12)} {(item.weight * 100).toFixed(1)}% GROSS WEIGHT
+        </Text>
+      )) : <Text fg={colors.positive}>No concentration breaches.</Text>}
+      <Text fg={colors.border}>DETERMINISTIC BETA SHOCKS</Text>
+      {snapshot.scenarios.length > 0 ? snapshot.scenarios.map((scenario) => (
+        <Text key={scenario.label} fg={scenario.pnl >= 0 ? colors.positive : colors.negative}>
+          {scenario.label.padEnd(12)} {riskMoney(scenario.pnl, currency)}
+        </Text>
+      )) : <Text fg={colors.textDim}>Beta scenarios unavailable.</Text>}
+      <Text fg={colors.border}>TOP-HOLDING CORRELATIONS</Text>
+      {snapshot.correlations.length > 0 ? snapshot.correlations.map((row) => (
+        <Text key={row.symbol} fg={colors.text}>
+          {row.symbol.padEnd(10)} {row.values.map((value) => value === null ? "   —" : value.toFixed(2).padStart(5)).join(" ")}
+        </Text>
+      )) : <Text fg={colors.textDim}>Correlation history unavailable.</Text>}
+      <Text fg={colors.textMuted}>
+        {snapshot.sources.join(" + ") || "NO PRICE SOURCE"} · HISTORY {snapshot.historyAsOf}
+      </Text>
+      <Text fg={colors.textMuted}>POSITIONS {snapshot.positionAsOf}</Text>
+    </Box>
+  );
+}
+
+export function IjtRiskPane(_props: PaneProps) {
+  const snapshotState = usePortfolioSnapshot();
+  const requests = useMemo<ChartRequest[]>(() => {
+    if (snapshotState.status !== "ready") return [];
+    return [...new Set([
+      ...snapshotState.snapshot.positions.map(({ ticker }) => ticker.trim().toUpperCase()),
+      "SPY",
+    ])]
+      .filter(Boolean)
+      .sort()
+      .map((symbol) => ({
+        instrument: { symbol, exchange: "" },
+        bufferRange: "1Y",
+        granularity: "resolution" as const,
+        resolution: "1d" as const,
+      }));
+  }, [snapshotState]);
+  const chartEntries = useChartQueries(requests);
+  const histories = useMemo<IjtHistorySeries[]>(() => requests.flatMap((request) => {
+    const entry = chartEntries.get(buildChartKey(request));
+    const points = entry?.data ?? entry?.lastGoodData;
+    if (!points) return [];
+    return [{
+      symbol: request.instrument.symbol,
+      points,
+      source: entry?.source ?? "unknown",
+      fetchedAt: entry?.fetchedAt ?? null,
+      stale: entry?.staleAt != null && Date.now() > entry.staleAt,
+    }];
+  }), [chartEntries, requests]);
+
+  if (snapshotState.status === "loading") {
+    return <Box padding={1}><Text fg={colors.textDim}>Loading canonical IJT risk inputs...</Text></Box>;
+  }
+  if (snapshotState.status === "error") {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text fg={colors.negative} attributes={TextAttributes.BOLD}>IJT RISK UNAVAILABLE</Text>
+        <Text fg={colors.textDim}>Authenticate with IJT Login, then reopen this pane.</Text>
+      </Box>
+    );
+  }
+  if (snapshotState.snapshot.positions.length === 0) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text fg={colors.accent} attributes={TextAttributes.BOLD}>IJT PORTFOLIO RISK MANAGER</Text>
+        <Text fg={colors.textMuted}>NO CANONICAL POSITIONS</Text>
+      </Box>
+    );
+  }
+  const risk = calculateIjtRiskSnapshot(snapshotState.snapshot, histories);
+  const currency = snapshotState.snapshot.accountSummary?.currency
+    ?? snapshotState.snapshot.positions[0]?.currency
+    ?? "USD";
+  return <RiskResultView snapshot={risk} currency={currency} />;
+}
+
 export const ijtRiskPlugin: GloomPlugin = {
   id: "ijt-risk",
   name: "IJT Risk Quant",
@@ -179,14 +278,33 @@ export const ijtRiskPlugin: GloomPlugin = {
     defaultPosition: "right",
     defaultMode: "floating",
     defaultFloatingSize: { width: 96, height: 28 },
+  }, {
+    id: "ijt-risk",
+    name: "IJT Portfolio Risk",
+    icon: "R",
+    component: IjtRiskPane,
+    defaultPosition: "right",
+    defaultMode: "floating",
+    defaultFloatingSize: { width: 96, height: 30 },
   }],
-  paneTemplates: [{
-    id: "ijt-simulation-pane",
-    paneId: "ijt-simulation",
-    label: "IJT Monte Carlo",
-    description: "Seeded GBM over canonical positions and current aligned daily histories.",
-    keywords: ["sim", "monte carlo", "risk", "ruin", "percentiles", "gbm"],
-    shortcut: { prefix: "SIM" },
-    createInstance: () => ({ placement: "floating" }),
-  }],
+  paneTemplates: [
+    {
+      id: "ijt-simulation-pane",
+      paneId: "ijt-simulation",
+      label: "IJT Monte Carlo",
+      description: "Seeded GBM over canonical positions and current aligned daily histories.",
+      keywords: ["sim", "monte carlo", "risk", "ruin", "percentiles", "gbm"],
+      shortcut: { prefix: "SIM" },
+      createInstance: () => ({ placement: "floating" }),
+    },
+    {
+      id: "ijt-risk-pane",
+      paneId: "ijt-risk",
+      label: "IJT Portfolio Risk",
+      description: "Canonical exposures, parametric VaR, concentration, correlation, and beta shocks.",
+      keywords: ["risk", "var", "exposure", "concentration", "correlation", "shock"],
+      shortcut: { prefix: "RISK" },
+      createInstance: () => ({ placement: "floating" }),
+    },
+  ],
 };
