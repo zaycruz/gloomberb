@@ -15,28 +15,28 @@ mock or placeholder.
 
 | IJT | Current source truth | Owned-runtime target | Work |
 | --- | --- | --- | --- |
-| GP | Live Yahoo history with synthetic fallback | Existing ticker chart | Add aliases/provenance; remove synthetic fallback |
-| FA | Static statements | Existing financials | Replace IJT implementation |
-| DES | Static catalog plus quote | Existing overview | Replace static catalog |
-| ANR | Hard-coded ratings | Existing analyst research | Replace mock data |
-| CN | Yahoo RSS and SEC Atom | Existing news/SEC capabilities | Preserve useful public fallback |
-| OMON | Hard-coded options chain | Existing options | Add entitled IBKR provider route |
-| HDS | Placeholder | Existing holders/13F | Add IJT alias and verification |
+| GP | Live Yahoo history with synthetic fallback | Existing ticker chart | IJT command wired; verify desktop/provenance |
+| FA | Static statements | Existing financials | IJT command wired; verify desktop/provenance |
+| DES | Static catalog plus quote | Existing overview | IJT command wired; verify desktop/provenance |
+| ANR | Hard-coded ratings | Existing analyst research | IJT command wired; verify desktop/provenance |
+| CN | Yahoo RSS and SEC Atom | Existing news/SEC capabilities | IJT command wired; preserve useful public fallback |
+| OMON | Hard-coded options chain | Existing options | IJT command wired; add entitled IBKR provider route |
+| HDS | Placeholder | Existing holders/13F | IJT command wired; verify desktop/provenance |
 | RV | Placeholder | Existing relative valuation | Add provenance standard |
 | SPLC | Placeholder | `ijt-intelligence` supply-chain plugin | Build from primary/licensed sources |
 | TOP | Live public RSS | Existing news wire | Add IJT public feeds |
 | WEI | Placeholder | Existing world indices | Add IJT alias |
-| ECO | Hard-coded calendar | Existing econ plugin | Replace mock data |
+| ECO | Hard-coded calendar | Existing econ plugin | IJT alias wired to live native calendar; verify desktop |
 | EQS | Placeholder | Aurum-backed screener | Validate every ticker and metric |
 | DASH | Live account/NAV shell | `ijt-intelligence` dashboard | Compose fund, broker, macro and news capabilities |
 | PREP | Quote plus hard-coded levels/events | `ijt-intelligence` prep | Rebuild from session statistics and calendars |
 | TRIAD | Deterministic IJT model | `ijt-intelligence` triad | Port model and alias normalization |
 | COT | Live Supabase view | `ijt-data` COT capability and pane | Verify production credentials and desktop rendering |
 | FLOW | Hard-coded rows | Owned options-flow capability | Require licensed/BYO data or unavailable state |
-| SECT | Placeholder | Existing sectors/heatmap | Add IJT alias |
+| SECT | Placeholder | Existing sector performance | IJT alias wired to native sector/industry ETF returns; verify desktop |
 | CORR | Placeholder | Existing correlation | Add IJT alias and gateway history route |
 | MACRO | Live gateway plus regime rules | Owned public-FRED regime pane | Verify interactive desktop rendering |
-| FEAR | Live gateway score | Existing fear/greed plus Aurum provider | Preserve stronger provenance |
+| FEAR | Live gateway score | Existing fear/greed plus Aurum provider | IJT alias wired; preserve stronger provenance |
 | AI | Placeholder; AgentPanel is live | `ijt-aurum` | Port strict streaming and atomic actions |
 | JRNL | Hard-coded trades | Owned journal plugin | Build persistence, imports, stats and export |
 | PORT | Live Supabase positions | `ijt-data` canonical snapshot pane | Verify production credentials; add direct-broker mode |
@@ -50,6 +50,16 @@ mock or placeholder.
 | CAP | Authenticated Fund API and five writes | `ijt-fund-ops` operator pane | Expose writes only after receipts/idempotency and all workflows are complete |
 
 Current implementation checkpoints:
+
+- Native research/market convergence: exact IJT commands `GP`, `FA`, `DES`,
+  `ANR`, `CN`, `OMON`, and `HDS` now resolve to the stronger native ticker
+  surfaces instead of copying IJT's static or placeholder views. `ECO`, `SECT`,
+  and `FEAR` are compatibility aliases for the native live calendar, sector
+  performance, and sentiment panes while the upstream `ECON`, `BI`, and `FNG`
+  names remain available. Unit tests lock the mappings and global pane-shortcut
+  uniqueness; live OpenTUI verifies `DES SPY`, `ECO`, `SECT`, and `FEAR`
+  against their real native panes. Desktop verification and interactive checks for the other
+  ticker commands remain open.
 
 - Auth: masked `IJT Login` and explicit `IJT Logout` command-bar workflows
   invoke the backend capability in both renderers; sessions remain volatile.

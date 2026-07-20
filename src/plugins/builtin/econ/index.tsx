@@ -2,7 +2,7 @@ import { Box } from "../../../ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TextAttributes, type ScrollBoxRenderable } from "../../../ui";
 import { DataTableStackView, usePaneFooter, type DataTableCell } from "../../../components";
-import type { GloomPluginContext, PaneProps } from "../../../types/plugin";
+import type { GloomPluginContext, PaneProps, PaneTemplateDef } from "../../../types/plugin";
 import { colors, blendHex } from "../../../theme/colors";
 import type { EconEvent } from "./types";
 import { EconDetailView } from "./detail-view";
@@ -350,6 +350,25 @@ function EconCalendarPane({ focused, width, height }: PaneProps) {
   );
 }
 
+export const econCalendarPaneTemplates: PaneTemplateDef[] = [
+  {
+    id: "econ-calendar-pane",
+    paneId: "econ-calendar",
+    label: "Economic Calendar",
+    description: "Upcoming economic events, releases, and indicators.",
+    keywords: ["econ", "economic", "calendar", "events", "macro", "releases", "fed", "cpi", "gdp"],
+    shortcut: { prefix: "ECON" },
+  },
+  {
+    id: "ijt-econ-calendar-pane",
+    paneId: "econ-calendar",
+    label: "Economic Calendar",
+    description: "IJT ECO alias for the native live economic calendar.",
+    keywords: ["ijt", "eco", "economic", "calendar"],
+    shortcut: { prefix: "ECO" },
+  },
+];
+
 export function registerEconCalendarFeature(ctx: GloomPluginContext): void {
   attachEconCalendarPersistence(ctx.persistence);
   attachEconFredPersistence(ctx.persistence);
@@ -364,14 +383,7 @@ export function registerEconCalendarFeature(ctx: GloomPluginContext): void {
     defaultFloatingSize: { width: 100, height: 30 },
   });
 
-  ctx.registerPaneTemplate({
-    id: "econ-calendar-pane",
-    paneId: "econ-calendar",
-    label: "Economic Calendar",
-    description: "Upcoming economic events, releases, and indicators.",
-    keywords: ["econ", "economic", "calendar", "events", "macro", "releases", "fed", "cpi", "gdp"],
-    shortcut: { prefix: "ECON" },
-  });
+  for (const template of econCalendarPaneTemplates) ctx.registerPaneTemplate(template);
 }
 
 export function resetEconCalendarFeature(): void {

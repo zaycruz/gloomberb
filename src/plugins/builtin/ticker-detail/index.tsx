@@ -199,6 +199,14 @@ export const tickerDetailPlugin: GloomPlugin = {
       },
     },
     createTickerSurfacePaneTemplate({
+      id: "description-pane",
+      paneId: TICKER_RESEARCH_PANE_ID,
+      label: "Security Description",
+      description: "Open the company overview and security description for a ticker.",
+      keywords: ["description", "company", "overview", "profile", "des"],
+      shortcut: "DES",
+    }),
+    createTickerSurfacePaneTemplate({
       id: "historical-prices-pane",
       paneId: "historical-prices",
       label: "Historical Prices",

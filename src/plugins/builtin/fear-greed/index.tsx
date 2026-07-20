@@ -41,5 +41,13 @@ export const fearGreedPlugin: GloomPlugin = {
       keywords: ["fear", "greed", "sentiment", "cnn", "market", "indicators", "gauge"],
       shortcut: { prefix: "FNG" },
     },
+    {
+      id: "ijt-fear-greed-pane",
+      paneId: "fear-greed",
+      label: "Fear & Greed",
+      description: "IJT FEAR alias for the native live sentiment gauge.",
+      keywords: ["ijt", "fear", "greed", "sentiment"],
+      shortcut: { prefix: "FEAR" },
+    },
   ],
 };

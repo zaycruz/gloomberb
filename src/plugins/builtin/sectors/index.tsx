@@ -332,5 +332,13 @@ export const sectorsPlugin: GloomPlugin = {
       keywords: ["sector", "sectors", "industry", "semis", "defense", "food", "leisure", "etf", "xlk", "xlv", "xlf", "performance", "spdr"],
       shortcut: { prefix: "BI" },
     },
+    {
+      id: "ijt-sector-performance-pane",
+      paneId: "sectors",
+      label: "Sector Rotation",
+      description: "IJT SECT alias for native sector and industry ETF performance.",
+      keywords: ["ijt", "sector", "rotation", "industry", "performance"],
+      shortcut: { prefix: "SECT" },
+    },
   ],
 };
