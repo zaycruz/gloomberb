@@ -22,10 +22,10 @@ mock or placeholder.
 | CN | Yahoo RSS and SEC Atom | Existing news/SEC capabilities | IJT command wired; preserve useful public fallback |
 | OMON | Hard-coded options chain | Existing options | IJT command wired; add entitled IBKR provider route |
 | HDS | Placeholder | Existing holders/13F | IJT command wired; verify desktop/provenance |
-| RV | Placeholder | Existing relative valuation | Add provenance standard |
+| RV | Placeholder | Existing relative valuation | Native command verified; add desktop proof |
 | SPLC | Placeholder | `ijt-intelligence` supply-chain plugin | Build from primary/licensed sources |
-| TOP | Live public RSS | Existing news wire | Add IJT public feeds |
-| WEI | Placeholder | Existing world indices | Add IJT alias |
+| TOP | Live public RSS | Existing news wire | Native command verified; retain public feeds |
+| WEI | Placeholder | Existing world indices | Native command verified; add desktop proof |
 | ECO | Hard-coded calendar | Existing econ plugin | IJT alias wired to live native calendar; verify desktop |
 | EQS | Placeholder | Aurum-backed screener | Validate every ticker and metric |
 | DASH | Live account/NAV shell | `ijt-intelligence` dashboard | Compose fund, broker, macro and news capabilities |
@@ -34,7 +34,7 @@ mock or placeholder.
 | COT | Live Supabase view | `ijt-data` COT capability and pane | Verify production credentials and desktop rendering |
 | FLOW | Hard-coded rows | Owned options-flow capability | Require licensed/BYO data or unavailable state |
 | SECT | Placeholder | Existing sector performance | IJT alias wired to native sector/industry ETF returns; verify desktop |
-| CORR | Placeholder | Existing correlation | Add IJT alias and gateway history route |
+| CORR | Placeholder | Existing correlation | Native date-aligned model verified; add desktop proof |
 | MACRO | Live gateway plus regime rules | Owned public-FRED regime pane | Verify interactive desktop rendering |
 | FEAR | Live gateway score | Existing fear/greed plus Aurum provider | IJT alias wired; preserve stronger provenance |
 | AI | Placeholder; AgentPanel is live | `ijt-aurum` | Port strict streaming and atomic actions |
@@ -60,6 +60,13 @@ Current implementation checkpoints:
   uniqueness; live OpenTUI verifies `DES SPY`, `ECO`, `SECT`, and `FEAR`
   against their real native panes. Desktop verification and interactive checks for the other
   ticker commands remain open.
+
+- Existing exact commands `TOP`, `WEI`, `CORR`, and `RV` are now locked into
+  the owned migration contract. Live OpenTUI verified ranked public news,
+  global index quotes by region, a 250-observation SPY/QQQ/GLD Pearson matrix,
+  and live AAPL/MSFT/NVDA relative valuation. The news templates are exported
+  as one tested registration set so runtime registration and command-contract
+  tests cannot drift apart. Desktop rendering remains open.
 
 - Auth: masked `IJT Login` and explicit `IJT Logout` command-bar workflows
   invoke the backend capability in both renderers; sessions remain volatile.

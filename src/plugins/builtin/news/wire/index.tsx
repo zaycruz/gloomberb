@@ -1,5 +1,4 @@
-import type { PaneProps } from "../../../../types/plugin";
-import type { GloomPluginContext } from "../../../../types/plugin";
+import type { GloomPluginContext, PaneProps, PaneTemplateDef } from "../../../../types/plugin";
 import type { NewsQuery } from "../../../../news/types";
 import { createRssNewsCapability } from "./rss/source";
 import { IndustryPane } from "./industry-pane";
@@ -54,6 +53,13 @@ const FeedPane = createNewsPresetPane({
   emptyStateHint: "Try refreshing later as wire stories arrive.",
 });
 
+export const newsWirePaneTemplates: PaneTemplateDef[] = [
+  { id: "news-top-pane", paneId: "news-top", label: "Top News", description: "Curated top market stories ranked by importance", keywords: ["top", "news", "headlines", "stories"], shortcut: { prefix: "TOP" } },
+  { id: "news-feed-pane", paneId: "news-feed", label: "News Feed", description: "Chronological market news firehose", keywords: ["news", "feed", "firehose", "wire", "stream"], shortcut: { prefix: "N" } },
+  { id: "news-industry-pane", paneId: "news-industry", label: "Sector News", description: "Market news filtered by sector", keywords: ["news", "industry", "sector", "ni", "filter"], shortcut: { prefix: "NI" } },
+  { id: "news-breaking-pane", paneId: "news-breaking", label: "Breaking News", description: "Breaking and urgent market news", keywords: ["first", "breaking", "urgent", "alert", "flash"], shortcut: { prefix: "FIRST" } },
+];
+
 export function registerNewsWireFeatures(ctx: GloomPluginContext): () => void {
   ctx.registerPane({ id: "news-top", name: "Top News", icon: "T", component: TopPane, defaultPosition: "right", defaultMode: "floating", defaultFloatingSize: { width: 90, height: 30 } });
   ctx.registerPane({ id: "news-feed", name: "News Feed", icon: "N", component: FeedPane, defaultPosition: "right", defaultMode: "floating", defaultFloatingSize: { width: 100, height: 35 } });
@@ -78,10 +84,7 @@ export function registerNewsWireFeatures(ctx: GloomPluginContext): () => void {
     },
   });
 
-  ctx.registerPaneTemplate({ id: "news-top-pane", paneId: "news-top", label: "Top News", description: "Curated top market stories ranked by importance", keywords: ["top", "news", "headlines", "stories"], shortcut: { prefix: "TOP" } });
-  ctx.registerPaneTemplate({ id: "news-feed-pane", paneId: "news-feed", label: "News Feed", description: "Chronological market news firehose", keywords: ["news", "feed", "firehose", "wire", "stream"], shortcut: { prefix: "N" } });
-  ctx.registerPaneTemplate({ id: "news-industry-pane", paneId: "news-industry", label: "Sector News", description: "Market news filtered by sector", keywords: ["news", "industry", "sector", "ni", "filter"], shortcut: { prefix: "NI" } });
-  ctx.registerPaneTemplate({ id: "news-breaking-pane", paneId: "news-breaking", label: "Breaking News", description: "Breaking and urgent market news", keywords: ["first", "breaking", "urgent", "alert", "flash"], shortcut: { prefix: "FIRST" } });
+  for (const template of newsWirePaneTemplates) ctx.registerPaneTemplate(template);
 
   const initialSettings = loadNewsFeedSettings(ctx.configState);
   if (initialSettings.migrated) {

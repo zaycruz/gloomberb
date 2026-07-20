@@ -4,10 +4,13 @@ import { econCalendarPaneTemplates } from "./econ";
 import { fearGreedPlugin } from "./fear-greed";
 import { holdersPlugin } from "./holders";
 import { newsPlugin } from "./news";
+import { newsWirePaneTemplates } from "./news/wire";
 import { optionsPlugin } from "./options";
+import { correlationPlugin } from "./correlation";
 import { researchPlugin } from "./research";
 import { sectorsPlugin } from "./sectors";
 import { tickerDetailPlugin } from "./ticker-detail";
+import { worldIndicesPlugin } from "./world-indices";
 
 function shortcutTarget(
   templates: NonNullable<typeof tickerDetailPlugin.paneTemplates>,
@@ -25,6 +28,7 @@ describe("IJT native command convergence", () => {
     expect(shortcutTarget(newsPlugin.paneTemplates ?? [], "CN")).toBe("ticker-news");
     expect(shortcutTarget(optionsPlugin.paneTemplates ?? [], "OMON")).toBe("options");
     expect(shortcutTarget(holdersPlugin.paneTemplates ?? [], "HDS")).toBe("holders");
+    expect(shortcutTarget(researchPlugin.paneTemplates ?? [], "RV")).toBe("relative-valuation");
   });
 
   test("keeps upstream shortcuts while exposing IJT market aliases", () => {
@@ -34,6 +38,9 @@ describe("IJT native command convergence", () => {
     expect(shortcutTarget(sectorsPlugin.paneTemplates ?? [], "SECT")).toBe("sectors");
     expect(shortcutTarget(econCalendarPaneTemplates, "ECON")).toBe("econ-calendar");
     expect(shortcutTarget(econCalendarPaneTemplates, "ECO")).toBe("econ-calendar");
+    expect(shortcutTarget(newsWirePaneTemplates, "TOP")).toBe("news-top");
+    expect(shortcutTarget(worldIndicesPlugin.paneTemplates ?? [], "WEI")).toBe("world-indices");
+    expect(shortcutTarget(correlationPlugin.paneTemplates ?? [], "CORR")).toBe("correlation");
   });
 
   test("does not introduce duplicate prefixes within each native surface", () => {
@@ -46,6 +53,9 @@ describe("IJT native command convergence", () => {
       fearGreedPlugin.paneTemplates ?? [],
       sectorsPlugin.paneTemplates ?? [],
       econCalendarPaneTemplates,
+      newsWirePaneTemplates,
+      worldIndicesPlugin.paneTemplates ?? [],
+      correlationPlugin.paneTemplates ?? [],
     ]) {
       const prefixes = templates.flatMap((template) => template.shortcut?.prefix ?? []);
       expect(new Set(prefixes).size).toBe(prefixes.length);
@@ -56,6 +66,7 @@ describe("IJT native command convergence", () => {
     const templates = [
       ...uiBuiltinPlugins.flatMap((plugin) => plugin.paneTemplates ?? []),
       ...econCalendarPaneTemplates,
+      ...newsWirePaneTemplates,
     ];
     const prefixes = templates.flatMap((template) => template.shortcut?.prefix ?? []);
 
