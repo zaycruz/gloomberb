@@ -342,7 +342,7 @@ export const analyticsPlugin: GloomPlugin = {
       label: "Portfolio Analytics",
       description: "Sharpe ratio, beta vs S&P 500, and sector allocation for your portfolio.",
       keywords: ["risk", "analytics", "sharpe", "beta", "sector", "allocation", "portfolio"],
-      shortcut: { prefix: "PORT" },
+      shortcut: { prefix: "PANL" },
       canCreate: (context) => context.config.portfolios.length > 0,
       createInstance: (context) => {
         const portfolioId = resolveTemplatePortfolioId(context.config.portfolios, context.activeCollectionId);

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { IJT_SUPABASE_URL } from "../auth";
 import { createIjtDataCapability } from "./capability";
-import { createIjtDataClient } from "./client";
+import { createIjtDataClient, type IjtDataClient } from "./client";
 
 const publishableKey = `sb_publishable_${"a".repeat(24)}`;
 const config = { supabaseUrl: IJT_SUPABASE_URL, publishableKey };
@@ -95,12 +95,38 @@ describe("IJT canonical Supabase data", () => {
   test("declares all data operations renderer-safe and read-only", () => {
     const capability = createIjtDataCapability(null);
     expect(Object.keys(capability.operations)).toEqual([
-      "positions", "accountSummary", "cot", "lpRoster", "navHistory",
+      "portfolioSnapshot", "positions", "accountSummary", "cot", "lpRoster", "navHistory",
     ]);
     for (const operation of Object.values(capability.operations)) {
       expect(operation.rendererSafe).toBe(true);
       expect(operation.kind).toBe("read");
       expect(operation.cli?.sideEffectLevel).toBe("none");
     }
+  });
+
+  test("loads account and positions through one portfolio snapshot operation", async () => {
+    const client: IjtDataClient = {
+      fetchIbkrPositions: async () => [{
+        account_id: "DU123", conid: 265598, ticker: "AAPL", asset_class: "STK",
+        position: 10, avg_price: 100, market_price: 110, market_value: 1100,
+        unrealized_pnl: 100, currency: "USD", as_of: "2026-07-19T12:00:00Z",
+        fetched_at: "2026-07-19T12:01:00Z",
+      }],
+      fetchIbkrAccountSummary: async () => ({
+        account_id: "DU123", net_liquidation: 10_000, total_cash: 2_000,
+        accrued_cash: 0, stock_mv: 8_000, option_mv: 0, futures_mv: 0,
+        unrealized_pnl: 100, realized_pnl: 25, currency: "USD",
+        as_of: "2026-07-19T12:00:00Z", fetched_at: "2026-07-19T12:01:00Z",
+      }),
+      fetchCotReport: async () => [],
+      fetchLpRoster: async () => [],
+      fetchNavHistory: async () => [],
+    };
+    const operation = createIjtDataCapability(client).operations.portfolioSnapshot!;
+
+    await expect(operation.handler({})).resolves.toMatchObject({
+      accountSummary: { account_id: "DU123", net_liquidation: 10_000 },
+      positions: [{ ticker: "AAPL", market_value: 1100 }],
+    });
   });
 });

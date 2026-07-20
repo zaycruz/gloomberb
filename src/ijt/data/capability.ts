@@ -1,6 +1,16 @@
 import type { PluginCapability } from "../../capabilities";
 import { ijtAuthSession, loadIjtAuthConfig } from "../auth";
-import { createIjtDataClient, type IjtDataClient } from "./client";
+import {
+  createIjtDataClient,
+  type IbkrAccountSummaryRow,
+  type IbkrPositionRow,
+  type IjtDataClient,
+} from "./client";
+
+export interface IjtPortfolioSnapshot {
+  positions: IbkrPositionRow[];
+  accountSummary: IbkrAccountSummaryRow | null;
+}
 
 export function createIjtDataCapability(client: IjtDataClient | null): PluginCapability {
   const requireClient = () => {
@@ -23,6 +33,14 @@ export function createIjtDataCapability(client: IjtDataClient | null): PluginCap
     kind: "plugin-service",
     name: "IJT Canonical Data",
     operations: {
+      portfolioSnapshot: read("Load the canonical IBKR portfolio snapshot.", async () => {
+        const dataClient = requireClient();
+        const [positions, accountSummary] = await Promise.all([
+          dataClient.fetchIbkrPositions(),
+          dataClient.fetchIbkrAccountSummary(),
+        ]);
+        return { positions, accountSummary } satisfies IjtPortfolioSnapshot;
+      }),
       positions: read("Load canonical IBKR positions.", () => requireClient().fetchIbkrPositions()),
       accountSummary: read("Load the latest canonical IBKR account summary.", () => requireClient().fetchIbkrAccountSummary()),
       cot: read("Load the latest canonical COT report.", () => requireClient().fetchCotReport()),

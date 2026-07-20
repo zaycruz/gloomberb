@@ -28,7 +28,7 @@
     { "code": "FEAR", "target": "fear-greed", "status": "native-needs-ijt-contract" },
     { "code": "AI", "target": "ijt-aurum", "status": "port-required" },
     { "code": "JRNL", "target": "ijt-journal", "status": "port-required" },
-    { "code": "PORT", "target": "portfolio-list/ijt-gateway", "status": "snapshot-backend-ported" },
+    { "code": "PORT", "target": "ijt-data/portfolio-snapshot", "status": "pane-ported-open-tui-unauthed-verified" },
     { "code": "OPTA", "target": "ijt-risk-quant/options", "status": "port-required" },
     { "code": "RISK", "target": "ijt-risk-quant/risk", "status": "port-required" },
     { "code": "PERF", "target": "analytics/ijt-risk-quant", "status": "port-required" },

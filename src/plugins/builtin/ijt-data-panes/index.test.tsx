@@ -4,7 +4,12 @@ import { Box } from "../../../ui";
 import { testRender } from "../../../renderers/opentui/test-utils";
 import { createTestPluginRuntime } from "../../../test-support/plugin-runtime";
 import { PluginRenderProvider, type PluginRuntimeAccess } from "../../runtime";
-import { ijtDataPanesPlugin, IjtCotPane, IjtNavPane } from ".";
+import {
+  ijtDataPanesPlugin,
+  IjtCotPane,
+  IjtNavPane,
+  IjtPortfolioPane,
+} from ".";
 
 let testSetup: Awaited<ReturnType<typeof testRender>> | undefined;
 
@@ -51,13 +56,14 @@ afterEach(async () => {
 });
 
 describe("ijtDataPanesPlugin", () => {
-  test("registers exact COT and NAV terminal shortcuts", () => {
+  test("registers exact COT, NAV, and PORT terminal shortcuts", () => {
     expect(ijtDataPanesPlugin.paneTemplates?.map((template) => ({
       paneId: template.paneId,
       prefix: template.shortcut?.prefix,
     }))).toEqual([
       { paneId: "ijt-cot", prefix: "COT" },
       { paneId: "ijt-nav", prefix: "NAV" },
+      { paneId: "ijt-portfolio", prefix: "PORT" },
     ]);
   });
 
@@ -128,5 +134,52 @@ describe("ijtDataPanesPlugin", () => {
     expect(frame).toContain("CASH $350,000.00");
     expect(frame).toContain("NET +2.75%");
     expect(frame).toContain("YTD +8.50%");
+  });
+
+  test("renders the canonical portfolio account and position snapshot", async () => {
+    const runtime = createTestPluginRuntime({
+      invokeCapability: async <T,>(_capabilityId, operationId) => {
+        expect(operationId).toBe("portfolioSnapshot");
+        return {
+          accountSummary: {
+            account_id: "DU123",
+            net_liquidation: 1_500_000,
+            total_cash: 250_000,
+            accrued_cash: 0,
+            stock_mv: 1_250_000,
+            option_mv: 0,
+            futures_mv: 0,
+            unrealized_pnl: 125_000,
+            realized_pnl: 40_000,
+            currency: "USD",
+            as_of: "2026-07-18T20:00:00Z",
+            fetched_at: "2026-07-18T20:01:00Z",
+          },
+          positions: [{
+            account_id: "DU123",
+            conid: 265598,
+            ticker: "AAPL",
+            asset_class: "STK",
+            position: 100,
+            avg_price: 175,
+            market_price: 210,
+            market_value: 21_000,
+            unrealized_pnl: 3_500,
+            currency: "USD",
+            as_of: "2026-07-18T20:00:00Z",
+            fetched_at: "2026-07-18T20:01:00Z",
+          }],
+        } as T;
+      },
+    });
+
+    const frame = await renderPane(IjtPortfolioPane, runtime);
+
+    expect(frame).toContain("IJT PORTFOLIO SNAPSHOT");
+    expect(frame).toContain("NLV $1,500,000.00");
+    expect(frame).toContain("CASH $250,000.00");
+    expect(frame).toContain("AAPL");
+    expect(frame).toContain("$21,000.00");
+    expect(frame).toContain("AS OF 2026-07-18T20:00:00Z · 1 POSITION");
   });
 });

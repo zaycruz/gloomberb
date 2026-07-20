@@ -3,7 +3,11 @@ import { Box, Text, TextAttributes } from "../../../ui";
 import { colors } from "../../../theme/colors";
 import type { GloomPlugin, PaneProps } from "../../../types/plugin";
 import { useCapabilityInvoker } from "../../runtime";
-import type { CotReportRow, NavHistoryRow } from "../../../ijt/data";
+import type {
+  CotReportRow,
+  IjtPortfolioSnapshot,
+  NavHistoryRow,
+} from "../../../ijt/data";
 import { formatCurrency } from "../../../utils/format";
 
 type LoadState<T> =
@@ -104,6 +108,41 @@ export function IjtNavPane({ height }: PaneProps) {
   );
 }
 
+export function IjtPortfolioPane({ height }: PaneProps) {
+  const state = useIjtData<IjtPortfolioSnapshot>("portfolioSnapshot");
+  if (state.status !== "ready") return <DataState state={state.status} />;
+  const { accountSummary, positions } = state.data;
+  const visibleRows = positions.slice(0, Math.max(1, height - 12));
+  const currency = accountSummary?.currency ?? positions[0]?.currency ?? "USD";
+  const asOf = accountSummary?.as_of ?? positions[0]?.as_of ?? "unavailable";
+  return (
+    <Box flexDirection="column" padding={1} gap={1}>
+      <Text fg={colors.accent} attributes={TextAttributes.BOLD}>IJT PORTFOLIO SNAPSHOT</Text>
+      {accountSummary ? (
+        <>
+          <Text fg={colors.textBright} attributes={TextAttributes.BOLD}>
+            NLV {formatCurrency(accountSummary.net_liquidation, currency)}   CASH {formatCurrency(accountSummary.total_cash, currency)}
+          </Text>
+          <Text fg={accountSummary.unrealized_pnl >= 0 ? colors.positive : colors.negative}>
+            UNREALIZED {formatCurrency(accountSummary.unrealized_pnl, currency)}   REALIZED {formatCurrency(accountSummary.realized_pnl, currency)}
+          </Text>
+        </>
+      ) : <Text fg={colors.textDim}>Account summary unavailable.</Text>}
+      <Text fg={colors.border}>TICKER      QTY          MARKET VALUE       UNREALIZED</Text>
+      {visibleRows.map((row) => (
+        <Text key={`${row.account_id}:${row.conid}`} fg={colors.text}>
+          {row.ticker.slice(0, 10).padEnd(12)}
+          {signed(row.position).padStart(10)}
+          {formatCurrency(row.market_value, row.currency).padStart(20)}
+          {formatCurrency(row.unrealized_pnl, row.currency).padStart(18)}
+        </Text>
+      ))}
+      {positions.length === 0 ? <Text fg={colors.textDim}>No canonical positions available.</Text> : null}
+      <Text fg={colors.textMuted}>AS OF {asOf} · {positions.length} POSITION{positions.length === 1 ? "" : "S"}</Text>
+    </Box>
+  );
+}
+
 export const ijtDataPanesPlugin: GloomPlugin = {
   id: "ijt-data-panes",
   name: "IJT Canonical Data",
@@ -129,6 +168,15 @@ export const ijtDataPanesPlugin: GloomPlugin = {
       defaultMode: "floating",
       defaultFloatingSize: { width: 78, height: 25 },
     },
+    {
+      id: "ijt-portfolio",
+      name: "IJT Portfolio Snapshot",
+      icon: "P",
+      component: IjtPortfolioPane,
+      defaultPosition: "right",
+      defaultMode: "floating",
+      defaultFloatingSize: { width: 84, height: 28 },
+    },
   ],
   paneTemplates: [
     {
@@ -147,6 +195,15 @@ export const ijtDataPanesPlugin: GloomPlugin = {
       description: "Canonical fund NAV, capital deployment, cash, and returns.",
       keywords: ["nav", "fund", "returns", "cash", "capital"],
       shortcut: { prefix: "NAV" },
+      createInstance: () => ({ placement: "floating" }),
+    },
+    {
+      id: "ijt-portfolio-pane",
+      paneId: "ijt-portfolio",
+      label: "IJT Portfolio Snapshot",
+      description: "Canonical authenticated IBKR account and position snapshot.",
+      keywords: ["portfolio", "positions", "account", "ibkr", "snapshot"],
+      shortcut: { prefix: "PORT" },
       createInstance: () => ({ placement: "floating" }),
     },
   ],

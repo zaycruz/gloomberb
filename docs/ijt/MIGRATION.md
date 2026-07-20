@@ -39,7 +39,7 @@ mock or placeholder.
 | FEAR | Live gateway score | Existing fear/greed plus Aurum provider | Preserve stronger provenance |
 | AI | Placeholder; AgentPanel is live | `ijt-aurum` | Port strict streaming and atomic actions |
 | JRNL | Hard-coded trades | Owned journal plugin | Build persistence, imports, stats and export |
-| PORT | Live Supabase positions | Existing portfolio plus `ijt-gateway` | Support snapshot and direct-broker modes |
+| PORT | Live Supabase positions | `ijt-data` canonical snapshot pane | Verify production credentials; add direct-broker mode |
 | OPTA | Hard-coded candidates/Greeks | Owned options analysis | Deterministic scoring over real chain |
 | RISK | Live deterministic analytics | `ijt-risk-quant` | Port kernels and fixtures |
 | PERF | Live deterministic analytics | Existing analytics plus IJT kernels | Consolidate to one canonical implementation |
@@ -65,9 +65,11 @@ Current implementation checkpoints:
   live OpenTUI checks prove the unauthenticated path fails closed with `IJT
   Login` guidance. Production-data and desktop-renderer verification remain
   open until credentials are available.
-- PORT: strict authenticated REST reads are available for positions, account
-  summary and LP roster. The existing portfolio surface still needs a canonical
-  snapshot adapter; a duplicate `PORT` shortcut is intentionally avoided.
+- PORT: the exact shortcut now opens a single backend-composed canonical account
+  and position snapshot, with tests for production-shaped values and provenance
+  plus a live OpenTUI fail-closed check. Existing local portfolio analytics move
+  to the explicit `PANL` shortcut instead of competing for `PORT`. Authenticated
+  production-data and desktop-renderer verification remain open.
 
 ## Cross-cutting migration work
 
