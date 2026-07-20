@@ -35,7 +35,7 @@ mock or placeholder.
 | FLOW | Hard-coded rows | Owned options-flow capability | Require licensed/BYO data or unavailable state |
 | SECT | Placeholder | Existing sectors/heatmap | Add IJT alias |
 | CORR | Placeholder | Existing correlation | Add IJT alias and gateway history route |
-| MACRO | Live gateway plus regime rules | `ijt-intelligence` macro regime | Port deterministic classifier |
+| MACRO | Live gateway plus regime rules | Owned public-FRED regime pane | Verify interactive desktop rendering |
 | FEAR | Live gateway score | Existing fear/greed plus Aurum provider | Preserve stronger provenance |
 | AI | Placeholder; AgentPanel is live | `ijt-aurum` | Port strict streaming and atomic actions |
 | JRNL | Hard-coded trades | Owned journal plugin | Build persistence, imports, stats and export |
@@ -78,6 +78,12 @@ Current implementation checkpoints:
   concentration-policy breaches, top-holding correlations and fixed beta
   shocks with source timestamps. Model and pane tests cover complete and partial
   histories; live OpenTUI proves the unauthenticated path fails closed.
+- MACRO: the exact shortcut now runs without IJT Gateway or Gloom Cloud. A
+  backend-owned, fixed-allowlist FRED client strictly parses bounded CSV for VIX,
+  matched-date 2s10s, HY OAS, broad USD and monthly copper, then applies IJT v1
+  normalization, staleness, exclusion and weight rules. Live OpenTUI verified a
+  production public-data `RISK-ON +35.00` result with per-series provenance on
+  2026-07-20; interactive desktop verification remains open.
 - COT/NAV: exact command-bar shortcuts now open authenticated canonical-data
   panes. Component tests cover production-shaped responses and provenance, and
   live OpenTUI checks prove the unauthenticated path fails closed with `IJT

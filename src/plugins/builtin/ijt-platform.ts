@@ -3,6 +3,7 @@ import { ijtAuthCapability } from "../../ijt/auth";
 import { ijtFundCapability } from "../../ijt/fund";
 import { ijtSimulationCapability } from "../../ijt/risk";
 import { ijtDataCapability } from "../../ijt/data";
+import { ijtMacroCapability } from "../../ijt/macro";
 
 export const ijtPlatformPlugin: GloomPlugin = {
   id: "ijt-platform",
@@ -13,6 +14,7 @@ export const ijtPlatformPlugin: GloomPlugin = {
     ijtDataCapability,
     ijtFundCapability,
     ijtSimulationCapability,
+    ijtMacroCapability,
   ],
   setup(ctx) {
     ctx.registerCommand({

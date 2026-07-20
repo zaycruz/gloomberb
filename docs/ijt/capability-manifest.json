@@ -24,7 +24,7 @@
     { "code": "FLOW", "target": "ijt-data/options-flow", "status": "port-required" },
     { "code": "SECT", "target": "sectors/heatmap", "status": "native-needs-ijt-contract" },
     { "code": "CORR", "target": "correlation", "status": "native-needs-ijt-contract" },
-    { "code": "MACRO", "target": "ijt-intelligence/macro", "status": "port-required" },
+    { "code": "MACRO", "target": "ijt-intelligence/macro", "status": "production-open-tui-verified" },
     { "code": "FEAR", "target": "fear-greed", "status": "native-needs-ijt-contract" },
     { "code": "AI", "target": "ijt-aurum", "status": "port-required" },
     { "code": "JRNL", "target": "ijt-journal", "status": "port-required" },
