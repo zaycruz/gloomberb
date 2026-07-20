@@ -31,7 +31,7 @@ mock or placeholder.
 | DASH | Live account/NAV shell | `ijt-intelligence` dashboard | Compose fund, broker, macro and news capabilities |
 | PREP | Quote plus hard-coded levels/events | `ijt-intelligence` prep | Rebuild from session statistics and calendars |
 | TRIAD | Deterministic IJT model | `ijt-intelligence` triad | Port model and alias normalization |
-| COT | Live Supabase view | `ijt-data` COT capability | Port strict decoder and freshness |
+| COT | Live Supabase view | `ijt-data` COT capability and pane | Verify production credentials and desktop rendering |
 | FLOW | Hard-coded rows | Owned options-flow capability | Require licensed/BYO data or unavailable state |
 | SECT | Placeholder | Existing sectors/heatmap | Add IJT alias |
 | CORR | Placeholder | Existing correlation | Add IJT alias and gateway history route |
@@ -46,7 +46,7 @@ mock or placeholder.
 | BACK | Hard-coded trades | Owned backtesting service | Rebuild with costs, slippage and no look-ahead |
 | SIM | Seeded live Monte Carlo | `ijt-risk-quant` | Port simulation and equivalence tests |
 | RPT | Live deterministic report | `ijt-fund-ops` report | Add immutable snapshot/export |
-| NAV | Live canonical NAV plus broker NLV | `ijt-fund-ops` NAV | Preserve distinction and reconciliation |
+| NAV | Live canonical NAV plus broker NLV | `ijt-fund-ops` NAV pane | Verify production credentials; add broker-NLV reconciliation |
 | CAP | Authenticated Fund API and five writes | `ijt-fund-ops` operator pane | Port receipts/idempotency; complete all workflows |
 
 Current implementation checkpoints:
@@ -60,9 +60,14 @@ Current implementation checkpoints:
 - SIM: the seeded GBM kernel and percentile/ruin outputs are ported with
   parity tests and a five-million path-day ceiling; portfolio-data wiring and
   the user-facing simulation pane remain open.
-- COT/PORT/NAV: strict authenticated REST reads are available as backend
-  capabilities for COT, positions, account summary, LP roster and NAV history;
-  their user-facing panes and portfolio adapters remain open.
+- COT/NAV: exact command-bar shortcuts now open authenticated canonical-data
+  panes. Component tests cover production-shaped responses and provenance, and
+  live OpenTUI checks prove the unauthenticated path fails closed with `IJT
+  Login` guidance. Production-data and desktop-renderer verification remain
+  open until credentials are available.
+- PORT: strict authenticated REST reads are available for positions, account
+  summary and LP roster. The existing portfolio surface still needs a canonical
+  snapshot adapter; a duplicate `PORT` shortcut is intentionally avoided.
 
 ## Cross-cutting migration work
 
