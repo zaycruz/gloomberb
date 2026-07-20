@@ -106,6 +106,19 @@ const VALUATION_METRIC_VALUES: PaneFunctionOptionValue[] = [
 ];
 
 const CAPABILITIES: Record<string, PaneFunctionCapability> = {
+  "ijt-triad-pane": {
+    id: "ijt-triad",
+    botSafe: true,
+    tickerCardinality: "none",
+    aliases: ["triad", "thesis scanner", "thesis hedge map"],
+    intents: ["map a market thesis to beneficiaries and natural hedges"],
+    outputKind: "triad",
+    reportReadiness: "ready",
+    screenshotReadiness: "partial",
+    dataRequirements: [],
+    limitations: ["Uses the deterministic IJT TRIAD v1 catalog; it does not predict returns."],
+    options: [],
+  },
   "financial-analysis-pane": {
     id: "financial-statements",
     botSafe: true,

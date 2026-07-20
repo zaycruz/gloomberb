@@ -19,7 +19,7 @@
     { "code": "EQS", "target": "ijt-aurum/screener", "status": "port-required" },
     { "code": "DASH", "target": "ijt-intelligence/dashboard", "status": "port-required" },
     { "code": "PREP", "target": "ijt-intelligence/prep", "status": "port-required" },
-    { "code": "TRIAD", "target": "ijt-intelligence/triad", "status": "port-required" },
+    { "code": "TRIAD", "target": "ijt-intelligence/triad", "status": "ported-open-tui-verified" },
     { "code": "COT", "target": "ijt-data/cot", "status": "port-required" },
     { "code": "FLOW", "target": "ijt-data/options-flow", "status": "port-required" },
     { "code": "SECT", "target": "sectors/heatmap", "status": "native-needs-ijt-contract" },
@@ -36,6 +36,6 @@
     { "code": "SIM", "target": "ijt-risk-quant/simulation", "status": "port-required" },
     { "code": "RPT", "target": "ijt-fund-ops/report", "status": "port-required" },
     { "code": "NAV", "target": "ijt-fund-ops/nav", "status": "port-required" },
-    { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "port-required" }
+    { "code": "CAP", "target": "ijt-fund-ops/operator", "status": "read-contract-ported" }
   ]
 }

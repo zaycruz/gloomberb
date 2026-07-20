@@ -20,6 +20,7 @@ import {
   renderTable,
 } from "../utils/cli-output";
 import { debugLog } from "../utils/debug-log";
+import { PRODUCT_CLI_NAME, PRODUCT_DESCRIPTION } from "../product";
 
 const registryLog = debugLog.createLogger("cli-registry");
 
@@ -106,10 +107,10 @@ function renderHelpSections(registry: CliCommandRegistry): string[] {
 
 export function renderCliHelp(registry: CliCommandRegistry, version: string): string {
   const lines = [
-    `${cliStyles.bold(`gloomberb v${version}`)}\n${cliStyles.muted("Market research and portfolio tracker for the terminal")}`,
+    `${cliStyles.bold(`${PRODUCT_CLI_NAME} v${version}`)}\n${cliStyles.muted(PRODUCT_DESCRIPTION)}`,
     "",
     renderSection("Usage"),
-    "gloomberb [command]",
+    `${PRODUCT_CLI_NAME} [command]`,
     "",
     renderSection("Commands"),
     renderTable(

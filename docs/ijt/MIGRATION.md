@@ -49,6 +49,13 @@ mock or placeholder.
 | NAV | Live canonical NAV plus broker NLV | `ijt-fund-ops` NAV | Preserve distinction and reconciliation |
 | CAP | Authenticated Fund API and five writes | `ijt-fund-ops` operator pane | Port receipts/idempotency; complete all workflows |
 
+Current implementation checkpoints:
+
+- TRIAD: deterministic v1 catalog, `TRIAD` pane shortcut, bot-safe text/JSON
+  report, backend capability, and live OpenTUI verification are complete.
+- CAP: strict Fund contract/client and authenticated read-only backend
+  capability are complete; operator pane and governed writes remain open.
+
 ## Cross-cutting migration work
 
 - Replace the numeric-panel Aurum action vocabulary with stable pane instance

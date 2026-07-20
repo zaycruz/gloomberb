@@ -1,5 +1,6 @@
 import type { PaneDef, PaneTemplateCreateOptions, PaneTemplateDef } from "../../types/plugin";
 import type { MarketContext } from "../types";
+import { PRODUCT_CLI_NAME, PRODUCT_NAME } from "../../product";
 import {
   buildCreateOptions,
   normalizeLookupToken,
@@ -229,11 +230,11 @@ export function filterPaneCatalogEntries(entries: PaneCatalogEntry[], query: str
 export function renderPaneCatalogReport(entries: PaneCatalogEntry[], args: ParsedPaneCatalogArgs): string {
   const shown = entries.slice(0, args.limit);
   const lines = [
-    "Gloomberb Function Catalog",
+    `${PRODUCT_NAME} Function Catalog`,
     "",
     "Use:",
-    "  gloomberb fn <shortcut-or-pane> [argument] [--key value]",
-    "  gloomberb shot <shortcut-or-pane> [argument] [--output path] [--key value]",
+    `  ${PRODUCT_CLI_NAME} fn <shortcut-or-pane> [argument] [--key value]`,
+    `  ${PRODUCT_CLI_NAME} shot <shortcut-or-pane> [argument] [--output path] [--key value]`,
     "",
     args.query
       ? `Matches for "${args.query}" (${shown.length}${entries.length > shown.length ? ` of ${entries.length}` : ""})`
@@ -269,7 +270,7 @@ export function renderPaneCatalogReport(entries: PaneCatalogEntry[], args: Parse
       lines.push(`  Limitations: ${entry.capability.limitations.join(" ")}`);
     }
     lines.push(`  Defaults: ${formatCatalogSettings(entry.defaultSettings)}`);
-    lines.push(`  Examples: gloomberb fn ${entry.token} ${arg} | gloomberb shot ${entry.token} ${arg} --output /tmp/${entry.token.toLowerCase()}.png`);
+    lines.push(`  Examples: ${PRODUCT_CLI_NAME} fn ${entry.token} ${arg} | ${PRODUCT_CLI_NAME} shot ${entry.token} ${arg} --output /tmp/${entry.token.toLowerCase()}.png`);
     lines.push("");
   }
 

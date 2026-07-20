@@ -221,7 +221,7 @@ export function ReadyStep({
       <Box height={2} />
       <Box height={1} flexDirection="row">
         <Text fg={colors.textDim}>{"Data stored in "}</Text>
-        <Text fg={colors.text}>{"~/gloomberb/"}</Text>
+        <Text fg={colors.text}>{"~/.ijt-terminal/"}</Text>
       </Box>
       <Box height={1} />
     </Box>

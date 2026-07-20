@@ -38,6 +38,7 @@ import {
   withShotPriceHistory,
 } from "./data";
 import type { ResolvedPaneFunction } from "./resolver";
+import { resolveTriadQuery } from "../../ijt/intelligence";
 
 export interface PaneFunctionReportData {
   kind: string;
@@ -654,6 +655,24 @@ export async function buildFunctionReport(
   }
 
   switch (resolved.capability.id) {
+    case "ijt-triad": {
+      const result = resolveTriadQuery(rawArg);
+      if (!result) throw new Error(`Unsupported IJT TRIAD thesis: ${rawArg || "(empty)"}.`);
+      return {
+        data: {
+          kind: "triad",
+          ...reportBase(resolved, [], 1, []),
+          ...result,
+        },
+        text: [
+          `IJT TRIAD · ${result.choice.toUpperCase()} ${result.direction.toUpperCase()}`,
+          `Beneficiaries: ${result.beneficiaries.join(", ")}`,
+          `Natural hedges: ${result.hedges.join(", ")}`,
+          `Logic: ${result.rationale}`,
+          `Model: ${result.modelVersion}`,
+        ].join("\n"),
+      };
+    }
     case "fundamental-series":
       return buildGraphSeriesReport(resolved, context, "fundamental");
     case "valuation-series":
