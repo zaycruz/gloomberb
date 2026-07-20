@@ -4,6 +4,7 @@ import { dirname, join } from "path";
 import type { AppConfig } from "../../../types/config";
 import { createDefaultConfig } from "../../../types/config";
 import { debugLog } from "../../../utils/debug-log";
+import { PRODUCT_DATA_DIR_NAME } from "../../../product";
 import {
   normalizeConfigForSave,
   normalizeLoadedConfig,
@@ -12,7 +13,7 @@ import {
 const configLog = debugLog.createLogger("config");
 
 function getGlobalConfigDir(): string {
-  return join(getHomeDir(), ".gloomberb");
+  return join(getHomeDir(), PRODUCT_DATA_DIR_NAME);
 }
 
 function getGlobalConfigFile(): string {
@@ -60,12 +61,15 @@ async function loadConfigState(dataDir: string): Promise<{ config: AppConfig; ne
 
 export async function saveConfig(config: AppConfig): Promise<void> {
   const configPath = join(config.dataDir, "config.json");
-  await mkdir(dirname(configPath), { recursive: true });
+  await mkdir(dirname(configPath), { recursive: true, mode: 0o700 });
 
   const persisted = normalizeConfigForSave(config);
   const tempPath = `${configPath}.${process.pid}.${Date.now()}.tmp`;
   try {
-    await writeFile(tempPath, JSON.stringify(persisted, null, 2), "utf-8");
+    await writeFile(tempPath, JSON.stringify(persisted, null, 2), {
+      encoding: "utf-8",
+      mode: 0o600,
+    });
     await rename(tempPath, configPath);
   } catch (error) {
     await rm(tempPath, { force: true }).catch(() => {});
@@ -75,7 +79,7 @@ export async function saveConfig(config: AppConfig): Promise<void> {
 
 export async function initDataDir(dataDir: string): Promise<AppConfig> {
   configLog.info(`Initializing data directory: ${dataDir}`);
-  await mkdir(dataDir, { recursive: true });
+  await mkdir(dataDir, { recursive: true, mode: 0o700 });
   const { config, needsSave } = await loadConfigState(dataDir);
   if (needsSave) {
     await saveConfig(config);
@@ -89,7 +93,10 @@ export async function resetAllData(dataDir: string): Promise<void> {
 
 export async function exportConfig(config: AppConfig, destPath: string): Promise<void> {
   const { dataDir, ...rest } = config;
-  await writeFile(expandHomePath(destPath), JSON.stringify(rest, null, 2), "utf-8");
+  await writeFile(expandHomePath(destPath), JSON.stringify(rest, null, 2), {
+    encoding: "utf-8",
+    mode: 0o600,
+  });
 }
 
 export async function importConfig(dataDir: string, srcPath: string): Promise<AppConfig> {

@@ -13,6 +13,7 @@ import type { PluginRegistry } from "../plugins/registry";
 import type { LoadedExternalPlugin } from "../plugins/loader";
 import { fail } from "./errors";
 import type { ConfigContext, MarketContext } from "./types";
+import { PRODUCT_CACHE_DB_NAME, PRODUCT_CLI_NAME } from "../product";
 
 interface CliContextOptions {
   plugins?: GloomPlugin[];
@@ -48,11 +49,11 @@ export async function loadCliConfigIfAvailable(): Promise<AppConfig | null> {
 export async function initConfigData(): Promise<ConfigContext> {
   const dataDir = await getDataDir();
   if (!dataDir || !existsSync(dataDir)) {
-    fail("No data directory configured.", "Run gloomberb once to initialize your local data.");
+    fail("No data directory configured.", `Run ${PRODUCT_CLI_NAME} once to initialize your local data.`);
   }
 
   const config = await loadConfig(dataDir);
-  const persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+  const persistence = new AppPersistence(join(dataDir, PRODUCT_CACHE_DB_NAME));
   const store = new TickerRepository(persistence.tickers);
   return { config, persistence, store, dataDir };
 }
@@ -74,7 +75,7 @@ export async function initMarketData(options: CliContextOptions = {}): Promise<M
 export async function initCliServices(options: CliServicesOptions = {}) {
   const dataDir = await getDataDir();
   if (!dataDir || !existsSync(dataDir)) {
-    fail("No data directory configured.", "Run gloomberb once to initialize your local data.");
+    fail("No data directory configured.", `Run ${PRODUCT_CLI_NAME} once to initialize your local data.`);
   }
 
   const config = await loadConfig(dataDir);

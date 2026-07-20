@@ -1,10 +1,11 @@
 {
-  "name": "gloomberb",
+  "name": "ijt-terminal",
   "version": "0.9.10",
-  "description": "Market research and portfolio tracker for the terminal",
+  "description": "IJT-owned market intelligence and fund operations terminal",
   "module": "src/index.tsx",
   "type": "module",
   "bin": {
+    "ijt": "bin/ijt",
     "gloomberb": "bin/gloomberb"
   },
   "files": [
@@ -28,7 +29,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vincelwt/gloomberb"
+    "url": "https://github.com/zaycruz/gloomberb"
   },
   "keywords": [
     "terminal",

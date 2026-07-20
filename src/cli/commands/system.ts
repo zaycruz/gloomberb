@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
+import { PRODUCT_CACHE_DB_NAME } from "../../product";
 import { VERSION } from "../../version";
 import { saveConfig } from "../../data/config/store";
 import { NotesFiles } from "../../plugins/builtin/notes/files";
@@ -78,7 +79,7 @@ export function createSystemCliCommands(allCommands: () => CliCommandDef[]): Cli
       try {
         services = await ctx.initServices();
         checks.push({ check: "config", status: "ok", detail: services.dataDir });
-        checks.push({ check: "database", status: "ok", detail: join(services.dataDir, ".gloomberb-cache.db") });
+        checks.push({ check: "database", status: "ok", detail: join(services.dataDir, PRODUCT_CACHE_DB_NAME) });
         checks.push({ check: "plugins", status: "ok", detail: String(services.services.pluginRegistry.allPlugins.size) });
         checks.push({ check: "capabilities", status: "ok", detail: String(services.services.pluginRegistry.capabilities.manifests().length) });
       } catch (error) {

@@ -14,6 +14,7 @@ import type { DataProvider } from "../types/data-provider";
 import { debugLog } from "../utils/debug-log";
 import { measurePerf, measurePerfAsync } from "../utils/perf-marks";
 import { setIbkrPortfolioPerformanceResourceStore } from "../plugins/ibkr/portfolio-performance";
+import { PRODUCT_CACHE_DB_NAME } from "../product";
 
 const servicesLog = debugLog.createLogger("services");
 
@@ -40,7 +41,7 @@ export function createAppServices({
     externalPluginCount: externalPlugins.length,
     brokerInstanceCount: config.brokerInstances.length,
   });
-  const dbPath = join(config.dataDir, ".gloomberb-cache.db");
+  const dbPath = join(config.dataDir, PRODUCT_CACHE_DB_NAME);
   const persistence = measurePerf("startup.services.persistence", () => new AppPersistence(dbPath));
   setIbkrPortfolioPerformanceResourceStore(persistence.resources);
   const tickerRepository = measurePerf("startup.services.ticker-repository", () => new TickerRepository(persistence.tickers));

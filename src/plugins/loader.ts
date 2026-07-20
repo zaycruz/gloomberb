@@ -4,10 +4,11 @@ import { existsSync } from "fs";
 import { homedir } from "os";
 import type { GloomPlugin } from "../types/plugin";
 import { debugLog } from "../utils/debug-log";
+import { PRODUCT_DATA_DIR_NAME } from "../product";
 
 const loaderLog = debugLog.createLogger("plugin-loader");
 
-const PLUGINS_DIR = join(process.env.HOME || homedir(), ".gloomberb", "plugins");
+const PLUGINS_DIR = join(process.env.HOME || homedir(), PRODUCT_DATA_DIR_NAME, "plugins");
 
 export interface LoadedExternalPlugin {
   plugin: GloomPlugin;

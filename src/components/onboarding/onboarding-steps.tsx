@@ -9,7 +9,7 @@ export interface BrokerSyncSummary {
   positionsImported: number;
 }
 
-const LOGO_TEXT = "Gloomberb";
+const LOGO_TEXT = "IJT Terminal";
 
 export function WelcomeStep() {
   return (
@@ -199,7 +199,7 @@ export function ReadyStep({
         <Box height={1}>
           <Text fg={isFinishing ? colors.text : colors.textDim}>
             {isFinishing
-              ? "Launching Gloomberb..."
+              ? "Launching IJT Terminal..."
               : positionsImported > 0
                 ? "Your broker portfolio is ready and will open directly after launch."
                 : "Broker sync finished. If you expected holdings, check the selected account or connection mode."}

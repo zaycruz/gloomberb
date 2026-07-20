@@ -1,4 +1,5 @@
 import { GITHUB_LATEST_RELEASE_API_URL } from "./updater/github-releases";
+import { PRODUCT_CLI_NAME } from "./product";
 
 function getRuntimeProcess(): Pick<NodeJS.Process, "platform" | "arch" | "argv" | "execPath"> | null {
   return (globalThis as { process?: NodeJS.Process }).process ?? null;
@@ -63,7 +64,7 @@ export function getAssetBaseNameForRuntime(
   // macOS x64 uses arm64 binary (runs via Rosetta 2)
   const arch = os === "darwin" || runtimeProcess?.arch === "arm64" ? "arm64" : "x64";
   const extension = os === "windows" ? ".exe" : "";
-  return `gloomberb-${os}-${arch}${extension}`;
+  return `${PRODUCT_CLI_NAME}-${os}-${arch}${extension}`;
 }
 
 function getAssetBaseName(): string {
@@ -170,7 +171,7 @@ export function detectUpdateAction(
   const normalizedExecPath = normalizePath(execPath);
   const execBase = basename(normalizedExecPath);
   const entrypoint = normalizePath(resolveEntrypointPath(argv));
-  if (execBase === "gloomberb.exe") return null;
+  if (execBase === `${PRODUCT_CLI_NAME}.exe` || execBase === "gloomberb.exe") return null;
 
   if (resolveSelfUpdateTargetPath(execPath, argv)) {
     return { kind: "self" };
@@ -187,7 +188,7 @@ export function detectUpdateAction(
     || entrypoint.includes("/.bun/install/")
     || entrypoint.includes("/install/global/")
   ) {
-    return { kind: "manual", command: "bun install -g gloomberb@latest" };
+    return { kind: "manual", command: "bun install -g ijt-terminal@latest" };
   }
 
   if (
@@ -210,7 +211,7 @@ export function detectUpdateAction(
     || entrypoint.includes("/lib/node_modules/")
     || entrypoint.includes("/node_modules/")
   ) {
-    return { kind: "manual", command: "npm install -g gloomberb@latest" };
+    return { kind: "manual", command: "npm install -g ijt-terminal@latest" };
   }
 
   return null;

@@ -26,7 +26,7 @@ function expectedAssetName(compressed = false): string {
   const os = process.platform === "darwin" ? "darwin" : process.platform === "win32" ? "windows" : "linux";
   const arch = os === "darwin" || process.arch === "arm64" ? "arm64" : "x64";
   const extension = os === "windows" ? ".exe" : "";
-  return compressed ? `gloomberb-${os}-${arch}${extension}.gz` : `gloomberb-${os}-${arch}${extension}`;
+  return compressed ? `ijt-${os}-${arch}${extension}.gz` : `ijt-${os}-${arch}${extension}`;
 }
 
 describe("getAssetBaseNameForRuntime", () => {
@@ -34,7 +34,7 @@ describe("getAssetBaseNameForRuntime", () => {
     expect(getAssetBaseNameForRuntime({
       platform: "win32",
       arch: "x64",
-    })).toBe("gloomberb-windows-x64.exe");
+    })).toBe("ijt-windows-x64.exe");
   });
 });
 
@@ -52,7 +52,7 @@ describe("detectUpdateAction", () => {
       ["/opt/homebrew/bin/bun", "/Users/vince/.bun/install/global/node_modules/gloomberb/bin/gloomberb"],
     )).toEqual({
       kind: "manual",
-      command: "bun install -g gloomberb@latest",
+      command: "bun install -g ijt-terminal@latest",
     });
   });
 
@@ -62,7 +62,7 @@ describe("detectUpdateAction", () => {
       ["C:\\Program Files\\Bun\\bun.exe", "C:\\Users\\vince\\.bun\\install\\global\\node_modules\\gloomberb\\bin\\gloomberb"],
     )).toEqual({
       kind: "manual",
-      command: "bun install -g gloomberb@latest",
+      command: "bun install -g ijt-terminal@latest",
     });
   });
 
@@ -72,7 +72,7 @@ describe("detectUpdateAction", () => {
       ["/opt/homebrew/bin/node", "/usr/local/lib/node_modules/gloomberb/bin/gloomberb"],
     )).toEqual({
       kind: "manual",
-      command: "npm install -g gloomberb@latest",
+      command: "npm install -g ijt-terminal@latest",
     });
   });
 
@@ -299,9 +299,9 @@ describe("performUpdate", () => {
     const release: ReleaseInfo = {
       version: "9.9.9",
       tagName: "v9.9.9",
-      downloadUrl: "https://example.com/gloomberb-darwin-arm64",
+      downloadUrl: "https://example.com/ijt-darwin-arm64",
       publishedAt: "2026-04-01T00:00:00Z",
-      updateAction: { kind: "manual", command: "bun install -g gloomberb@latest" },
+      updateAction: { kind: "manual", command: "bun install -g ijt-terminal@latest" },
     };
 
     await performUpdate(release, (entry) => {
@@ -311,7 +311,7 @@ describe("performUpdate", () => {
     expect(progress).toEqual([
       {
         phase: "error",
-        error: "Run bun install -g gloomberb@latest",
+        error: "Run bun install -g ijt-terminal@latest",
       },
     ]);
   });
@@ -323,7 +323,7 @@ describe("performUpdate", () => {
     const release: ReleaseInfo = {
       version: "9.9.9",
       tagName: "v9.9.9",
-      downloadUrl: "https://example.com/gloomberb-darwin-arm64",
+      downloadUrl: "https://example.com/ijt-darwin-arm64",
       publishedAt: "2026-04-01T00:00:00Z",
       updateAction: { kind: "self" },
     };

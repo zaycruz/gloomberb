@@ -19,6 +19,7 @@ import { measurePerfAsync } from "../../utils/perf-marks";
 import type { CliLaunchRequest } from "../../types/plugin";
 import type { RemoteControlAdapter } from "../../remote/app-host";
 import { startRemoteControlServer, type RemoteControlServer } from "../../remote/server";
+import { PRODUCT_DATA_DIR_NAME, PRODUCT_NAME } from "../../product";
 
 export interface StartOpenTuiAppOptions {
   externalPlugins?: Awaited<ReturnType<typeof loadExternalPlugins>>;
@@ -32,7 +33,7 @@ export async function startOpenTuiApp(options: StartOpenTuiAppOptions = {}): Pro
   debugLog.interceptConsole();
 
   const appLog = debugLog.createLogger("app");
-  appLog.info("Gloomberb starting");
+  appLog.info(`${PRODUCT_NAME} starting`);
   const remoteControlAdapter: RemoteControlAdapter = {
     startServer: ({ dataDir, handle }) => {
       let closed = false;
@@ -87,7 +88,7 @@ export async function startOpenTuiApp(options: StartOpenTuiAppOptions = {}): Pro
   try {
     let dataDir = await getDataDir();
     if (!dataDir) {
-      dataDir = join(process.env.HOME || "~", ".gloomberb");
+      dataDir = join(process.env.HOME || "~", PRODUCT_DATA_DIR_NAME);
     }
 
     if (!existsSync(dataDir)) {

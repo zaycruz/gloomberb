@@ -57,6 +57,7 @@ import {
 import { applyDesktopWindowControl, type DesktopWindowControlAction } from "./desktop/window-controls";
 import { startRemoteControlServer, type RemoteControlServer } from "../../../remote/server";
 import type { RemoteControlRequest, RemoteControlResponse } from "../../../remote/types";
+import { PRODUCT_URL_SCHEME } from "../../../product";
 
 type DesktopRpc = ReturnType<typeof BrowserView.defineRPC<ElectrobunDesktopRpcSchema>>;
 
@@ -105,9 +106,9 @@ function requireDesktopWorkspace(): DesktopWorkspace {
 
 const pendingDesktopDeepLinks: string[] = [];
 
-function isGloomberbDeepLink(rawUrl: string): boolean {
+function isIjtDeepLink(rawUrl: string): boolean {
   try {
-    return new URL(rawUrl).protocol === "gloomberb:";
+    return new URL(rawUrl).protocol === `${PRODUCT_URL_SCHEME}:`;
   } catch {
     return false;
   }
@@ -121,7 +122,7 @@ function readOpenUrlEvent(event: unknown): string | null {
 }
 
 function sendDesktopDeepLink(rawUrl: string): void {
-  if (!isGloomberbDeepLink(rawUrl)) return;
+  if (!isIjtDeepLink(rawUrl)) return;
   const rpc = getWindowRpc(MAIN_WINDOW_RPC_KEY);
   if (!rpc || !isWindowRpcReady(MAIN_WINDOW_RPC_KEY)) {
     pendingDesktopDeepLinks.push(rawUrl);

@@ -1,7 +1,8 @@
 import type { AppNotificationRequest, AppNotificationType } from "../types/plugin";
 import { debugLog } from "../utils/debug-log";
+import { PRODUCT_NAME } from "../product";
 
-const DEFAULT_NOTIFICATION_TITLE = "Gloomberb";
+const DEFAULT_NOTIFICATION_TITLE = PRODUCT_NAME;
 const notificationLog = debugLog.createLogger("notifications");
 
 function getRuntimePlatform(): NodeJS.Platform {

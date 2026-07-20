@@ -36,9 +36,9 @@ const bootLog = debugLog.createLogger("electrobun-web-boot");
 let appMounted = false;
 
 appRootElement.tabIndex = -1;
-root.render(<div className="gloom-loading">Starting Gloomberb...</div>);
+root.render(<div className="gloom-loading">Starting IJT Terminal...</div>);
 
-function renderFatalError(error: unknown, details?: string, title = "Gloomberb failed to start"): void {
+function renderFatalError(error: unknown, details?: string, title = "IJT Terminal failed to start"): void {
   root.render(
     <DesktopFatalScreen
       title={title}
@@ -53,7 +53,7 @@ window.__gloomRenderFatalError = (error, details, source) => {
   if (appMounted && source === "unhandledrejection") {
     return;
   }
-  renderFatalError(error, details, "Gloomberb crashed");
+  renderFatalError(error, details, "IJT Terminal crashed");
 };
 
 function focusWebSurface(): void {

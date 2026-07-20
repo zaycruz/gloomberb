@@ -180,7 +180,7 @@ export function Header() {
       >
         <Box paddingLeft={titlebarLeadingInset} flexDirection="row" alignItems="center" gap={1}>
           <Text attributes={TextAttributes.BOLD} fg={colors.headerText}>
-            Gloomberb
+            IJT Terminal
           </Text>
           <DesktopHeaderPill
             backgroundColor={blendHex(colors.header, colors.headerText, 0.1)}
@@ -225,7 +225,7 @@ export function Header() {
     >
       <Box paddingLeft={titleBarOverlay ? titlebarLeadingInset : 1}>
         <Text attributes={TextAttributes.BOLD} fg={colors.headerText}>
-          Gloomberb v{VERSION}
+          IJT Terminal v{VERSION}
         </Text>
       </Box>
       <Box flexGrow={1} paddingLeft={2}>

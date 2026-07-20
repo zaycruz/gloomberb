@@ -44,8 +44,12 @@ async function createCliFixture({
   const dataDir = await createTempDir("gloomberb-cli-data-");
   process.env.HOME = homeDir;
 
-  await mkdir(join(homeDir, ".gloomberb"), { recursive: true });
-  await writeFile(join(homeDir, ".gloomberb", "config.json"), JSON.stringify({ dataDir }), "utf-8");
+  await mkdir(join(homeDir, ".ijt-terminal"), { recursive: true });
+  await writeFile(
+    join(homeDir, ".ijt-terminal", "config.json"),
+    JSON.stringify({ dataDir }),
+    "utf-8",
+  );
 
   const config = createDefaultConfig(dataDir);
   if (baseCurrency) {
@@ -58,7 +62,7 @@ async function createCliFixture({
   config.watchlists = watchlists;
   await saveConfig(config);
 
-  const persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+  const persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
   const store = new TickerRepository(persistence.tickers);
   for (const ticker of tickers) {
     await store.saveTicker(ticker);
@@ -175,7 +179,7 @@ describe("CLI watchlist commands", () => {
     const addResult = await captureConsole(() => runCli(["watchlist", "add", "Growth", "NVDA"]));
     expect(addResult.stdout).toContain('Added NVDA to "Growth".');
 
-    let persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    let persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     let store = new TickerRepository(persistence.tickers);
     let savedTicker = await store.loadTicker("NVDA");
     persistence.close();
@@ -189,7 +193,7 @@ describe("CLI watchlist commands", () => {
     const config = await loadConfig(dataDir);
     expect(config.watchlists).toEqual([]);
 
-    persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     store = new TickerRepository(persistence.tickers);
     savedTicker = await store.loadTicker("NVDA");
     persistence.close();
@@ -237,7 +241,7 @@ describe("CLI portfolio commands", () => {
     const addResult = await captureConsole(() => runCli(["portfolio", "add", "Research", "NVDA"]));
     expect(addResult.stdout).toContain('Added NVDA to "Research".');
 
-    let persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    let persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     let store = new TickerRepository(persistence.tickers);
     let savedTicker = await store.loadTicker("NVDA");
     persistence.close();
@@ -265,7 +269,7 @@ describe("CLI portfolio commands", () => {
     const second = await captureConsole(() => runCli(["portfolio", "position", "set", "Research", "NVDA", "12", "405", "EUR"]));
     expect(second.stdout).toContain("EUR");
 
-    const persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    const persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     const store = new TickerRepository(persistence.tickers);
     const savedTicker = await store.loadTicker("NVDA");
     persistence.close();
@@ -323,7 +327,7 @@ describe("CLI portfolio commands", () => {
     expect(removeResult.stdout).toContain('Removed NVDA from "Research".');
     expect(removeResult.stdout).toContain("Removed Positions");
 
-    let persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    let persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     let store = new TickerRepository(persistence.tickers);
     let savedTicker = await store.loadTicker("NVDA");
     persistence.close();
@@ -338,7 +342,7 @@ describe("CLI portfolio commands", () => {
     const config = await loadConfig(dataDir);
     expect(config.portfolios).toEqual([{ id: "main", name: "Main Portfolio", currency: "USD" }]);
 
-    persistence = new AppPersistence(join(dataDir, ".gloomberb-cache.db"));
+    persistence = new AppPersistence(join(dataDir, ".ijt-terminal-cache.db"));
     store = new TickerRepository(persistence.tickers);
     savedTicker = await store.loadTicker("ASML");
     persistence.close();

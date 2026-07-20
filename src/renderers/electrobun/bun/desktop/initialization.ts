@@ -23,6 +23,7 @@ import {
   MAIN_WINDOW_RPC_KEY,
   paneIdFromDetachedRpcKey,
 } from "../window/focus";
+import { PRODUCT_DATA_DIR_NAME } from "../../../../product";
 
 interface DesktopWindowTarget {
   kind: "main" | "detached";
@@ -99,7 +100,7 @@ function buildInitializationPayload(
 }
 
 async function resolveDesktopDataDir(): Promise<string> {
-  const dataDir = await getDataDir() ?? join(process.env.HOME || homedir(), ".gloomberb");
+  const dataDir = await getDataDir() ?? join(process.env.HOME || homedir(), PRODUCT_DATA_DIR_NAME);
   if (!existsSync(dataDir)) {
     mkdirSync(dataDir, { recursive: true });
   }

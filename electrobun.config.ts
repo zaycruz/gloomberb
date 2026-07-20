@@ -1,16 +1,22 @@
 import type { ElectrobunConfig } from "electrobun/bun";
 import pkg from "./package.json";
+import {
+  PRODUCT_APP_ID,
+  PRODUCT_NAME,
+  PRODUCT_REPOSITORY,
+  PRODUCT_URL_SCHEME,
+} from "./src/product";
 
-const RELEASE_BASE_URL = "https://github.com/vincelwt/gloomberb/releases/latest/download";
+const RELEASE_BASE_URL = `https://github.com/${PRODUCT_REPOSITORY}/releases/latest/download`;
 const GENERATE_RELEASE_PATCH = process.platform !== "win32";
 
 const config: ElectrobunConfig = {
   app: {
-    name: "Gloomberb",
-    identifier: "com.vincelwt.gloomberb",
+    name: PRODUCT_NAME,
+    identifier: PRODUCT_APP_ID,
     version: pkg.version,
     description: pkg.description,
-    urlSchemes: ["gloomberb"],
+    urlSchemes: [PRODUCT_URL_SCHEME],
   },
   build: {
     bun: {

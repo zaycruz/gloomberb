@@ -4,6 +4,7 @@ import { join } from "path";
 import { gzipSync } from "zlib";
 import { syncVersion } from "./sync-version";
 import { OPEN_TUI_NATIVE_SMOKE_COMMAND } from "../src/cli/native-smoke";
+import { PRODUCT_CLI_NAME } from "../src/product";
 
 const rootDir = join(import.meta.dir, "..");
 
@@ -89,8 +90,11 @@ async function smokeTestBinary(outfile: string, os: string, arch: string) {
   }
 
   console.log("Smoke testing packaged binary...");
-  const smokeDir = mkdtempSync(join(tmpdir(), "gloomberb-smoke-"));
-  const smokeBinary = join(smokeDir, os === "windows" ? "gloomberb.exe" : "gloomberb");
+  const smokeDir = mkdtempSync(join(tmpdir(), `${PRODUCT_CLI_NAME}-smoke-`));
+  const smokeBinary = join(
+    smokeDir,
+    os === "windows" ? `${PRODUCT_CLI_NAME}.exe` : PRODUCT_CLI_NAME,
+  );
   copyFileSync(outfile, smokeBinary);
   if (os !== "windows") chmodSync(smokeBinary, 0o755);
 
@@ -147,8 +151,12 @@ function compressGzip(path: string): string {
 async function build(targetConfig: BuildTarget) {
   const { os, arch, bunOs, extension, nativePackageName } = targetConfig;
   mkdirSync(join(rootDir, "dist"), { recursive: true });
-  const outfile = join(rootDir, `dist/gloomberb-${os}-${arch}${extension}`);
-  const compileEntry = join(rootDir, "dist", `.gloomberb-compile-entry-${os}-${arch}.ts`);
+  const outfile = join(rootDir, `dist/${PRODUCT_CLI_NAME}-${os}-${arch}${extension}`);
+  const compileEntry = join(
+    rootDir,
+    "dist",
+    `.${PRODUCT_CLI_NAME}-compile-entry-${os}-${arch}.ts`,
+  );
   const target = `bun-${bunOs}-${arch}`;
   console.log(`Building ${target}...`);
   writeFileSync(compileEntry, buildCompileEntrySource(nativePackageName));
